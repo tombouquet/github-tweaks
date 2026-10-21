@@ -1,0 +1,13 @@
+{
+  "manifest_version": 3,
+  "name": "GitHub PR Image Lightbox",
+  "version": "1.0.0",
+  "description": "Opens images in GitHub pull requests in a zoomable gallery modal instead of a new page.",
+  "content_scripts": [
+    {
+      "matches": ["https://github.com/*"],
+      "js": ["src/content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}
