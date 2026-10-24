@@ -1,12 +1,12 @@
 {
   "manifest_version": 3,
-  "name": "GitHub PR Image Lightbox",
-  "version": "1.0.0",
-  "description": "Opens images in GitHub pull requests in a zoomable gallery modal instead of a new page.",
+  "name": "GitHub Tweaks",
+  "version": "1.2.0",
+  "description": "PR image lightbox, a Submit review button on the Conversation tab, file-type filters with review progress on Files changed, and absolute dates everywhere.",
   "content_scripts": [
     {
       "matches": ["https://github.com/*"],
-      "js": ["src/content.js"],
+      "js": ["src/content.js", "src/pr-review.js", "src/absolute-dates.js"],
       "run_at": "document_idle"
     }
   ]
