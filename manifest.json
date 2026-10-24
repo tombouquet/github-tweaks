@@ -2,6 +2,13 @@
   "manifest_version": 3,
   "name": "GitHub Tweaks",
   "version": "1.5.0",
+  "author": "Tom Bouquet",
+  "icons": {
+    "16": "images/icon-16.png",
+    "32": "images/icon-32.png",
+    "48": "images/icon-48.png",
+    "128": "images/icon-128.png"
+  },
   "description": "PR image lightbox, a Submit review button and a sticky merge status bar on the Conversation tab, file-type filters with review progress on Files changed, absolute dates everywhere, and file icons, image thumbnails downloads and quick view in repo file lists. Markdown opens as a commentable rich diff, and Copilot buttons are hidden.",
   "content_scripts": [
     {
