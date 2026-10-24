@@ -24,11 +24,16 @@
     '<svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M2.75 14A1.75 1.75 0 0 1 1 12.25v-2.5a.75.75 0 0 1 1.5 0v2.5c0 .138.112.25.25.25h10.5a.25.25 0 0 0 .25-.25v-2.5a.75.75 0 0 1 1.5 0v2.5A1.75 1.75 0 0 1 13.25 14Z"></path><path d="M7.25 7.689V2a.75.75 0 0 1 1.5 0v5.689l1.97-1.969a.749.749 0 1 1 1.06 1.06l-3.25 3.25a.749.749 0 0 1-1.06 0L4.22 6.78a.749.749 0 1 1 1.06-1.06l1.97 1.969Z"></path></svg>';
 
   let scheduled = false;
+  let settings;
 
-  injectStyles();
-  new MutationObserver(schedule).observe(document.documentElement, { childList: true, subtree: true });
-  document.addEventListener('click', onRowClick);
-  apply();
+  GH_TWEAKS_SETTINGS.then((loaded) => {
+    settings = loaded;
+    if (!['fileIcons', 'thumbnails', 'downloads', 'quickView'].some((key) => settings[key])) return;
+    injectStyles();
+    new MutationObserver(schedule).observe(document.documentElement, { childList: true, subtree: true });
+    if (settings.quickView) document.addEventListener('click', onRowClick);
+    apply();
+  });
 
   function schedule() {
     if (scheduled) return;
@@ -46,12 +51,11 @@
       column.setAttribute(DONE_ATTR, '');
       const isFile = link.pathname.includes('/blob/');
       const octicon = column.querySelector(':scope > svg.octicon-file');
-      if (octicon) {
-        const thumb = IMAGE_EXT.test(link.title) ? link.pathname.replace('/blob/', '/raw/') : null;
-        replaceIcon(octicon, link.title, thumb);
-      }
-      column.querySelector(':scope > .overflow-hidden')?.after(rowActions(link.pathname, isFile));
+      const thumb = settings.thumbnails && IMAGE_EXT.test(link.title) ? link.pathname.replace('/blob/', '/raw/') : null;
+      if (octicon && (thumb || settings.fileIcons)) replaceIcon(octicon, link.title, thumb);
+      if (settings.downloads) column.querySelector(':scope > .overflow-hidden')?.after(rowActions(link.pathname, isFile));
     }
+    if (!settings.fileIcons) return;
 
     // File trees: the repo sidebar uses octicon-file, the PR tree octicon-file-diff/-added/-removed/-moved.
     const treeIcons = `li[role="treeitem"]:not([aria-expanded]) .PRIVATE_TreeView-item-visual > svg[class*="octicon-file"]:not([${DONE_ATTR}])`;

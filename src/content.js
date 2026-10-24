@@ -14,7 +14,9 @@
 
   let viewer = null;
 
-  document.addEventListener('click', onPageClick, true);
+  GH_TWEAKS_SETTINGS.then((settings) => {
+    if (settings.lightbox) document.addEventListener('click', onPageClick, true);
+  });
 
   function onPageClick(event) {
     if (event.defaultPrevented || event.button !== 0) return;

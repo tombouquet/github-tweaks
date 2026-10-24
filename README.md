@@ -24,6 +24,8 @@ Reload any open GitHub tabs afterwards.
 
 ## Usage
 
+Every tweak is on by default. Click the extension icon in the toolbar to turn any of them off; changes apply when the GitHub tab reloads.
+
 ### Image lightbox
 
 Click any image in a PR description or comment. Every other image in the PR is collected into the gallery, in page order. Emoji, badges and other tiny images are skipped, as are duplicates.
@@ -73,7 +75,9 @@ In any repo file list, click a file row anywhere outside its links to quick view
 
 ## How it works
 
-Content scripts run on `github.com`. No permissions, no build step.
+Content scripts run on `github.com`. The only permission is `storage`, for the popup settings. No build step.
+
+- `src/settings.js` lists the tweaks and loads their on/off state from `chrome.storage.sync` (default on). Every content script waits for it before starting, and `popup.html` builds its switches from the same list.
 
 - `src/content.js` intercepts clicks on `.markdown-body img` when the URL is a PR (`/:owner/:repo/pull/:number`) and renders the viewer inside a Shadow DOM, so GitHub's styles don't leak in.
 - `src/pr-review.js` watches the page with a `MutationObserver` and targets GitHub's new React PR pages (`/pull/:number` and `/pull/:number/changes`). Files are grouped by path patterns, listed in `CATEGORIES` at the top of the file. The classic signed-out `/files` page is left alone.

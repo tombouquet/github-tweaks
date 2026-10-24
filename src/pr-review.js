@@ -22,15 +22,20 @@
   let hidden = loadHidden();
   let toolbar = null;
   let scheduled = false;
+  let settings;
 
-  injectStyles();
-  new MutationObserver(schedule).observe(document.documentElement, {
-    childList: true,
-    subtree: true,
-    attributes: true,
-    attributeFilter: ['aria-pressed'],
+  GH_TWEAKS_SETTINGS.then((loaded) => {
+    settings = loaded;
+    if (!settings.reviewButton && !settings.fileTriage) return;
+    injectStyles();
+    new MutationObserver(schedule).observe(document.documentElement, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['aria-pressed'],
+    });
+    schedule();
   });
-  schedule();
 
   // Batches the flood of React mutations into one pass.
   function schedule() {
@@ -44,10 +49,10 @@
 
   function update() {
     const path = location.pathname;
-    updateReviewButton(CONVERSATION_PATH.test(path) && isSignedIn());
+    if (settings.reviewButton) updateReviewButton(CONVERSATION_PATH.test(path) && isSignedIn());
     if (CHANGES_PATH.test(path)) {
-      openPendingReview();
-      updateTriage();
+      if (settings.reviewButton) openPendingReview();
+      if (settings.fileTriage) updateTriage();
     }
   }
 

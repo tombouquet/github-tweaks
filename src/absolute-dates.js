@@ -11,9 +11,12 @@
 
   let scheduled = false;
 
-  injectStyles();
-  new MutationObserver(schedule).observe(document.documentElement, { childList: true, subtree: true });
-  apply();
+  GH_TWEAKS_SETTINGS.then((settings) => {
+    if (!settings.absoluteDates) return;
+    injectStyles();
+    new MutationObserver(schedule).observe(document.documentElement, { childList: true, subtree: true });
+    apply();
+  });
 
   function schedule() {
     if (scheduled) return;

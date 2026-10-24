@@ -27,11 +27,14 @@
   let addButton = null;
   let scheduled = false;
 
-  injectStyles();
-  new MutationObserver(schedule).observe(document.documentElement, { childList: true, subtree: true });
-  document.addEventListener('click', onClick, true);
-  document.addEventListener('mouseover', onHover);
-  schedule();
+  GH_TWEAKS_SETTINGS.then((settings) => {
+    if (!settings.markdownReview) return;
+    injectStyles();
+    new MutationObserver(schedule).observe(document.documentElement, { childList: true, subtree: true });
+    document.addEventListener('click', onClick, true);
+    document.addEventListener('mouseover', onHover);
+    schedule();
+  });
 
   function schedule() {
     if (scheduled) return;

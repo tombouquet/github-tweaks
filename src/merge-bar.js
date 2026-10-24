@@ -24,10 +24,13 @@
   let scheduled = false;
   const visibility = new IntersectionObserver(([entry]) => bar?.classList.toggle('gh-tweaks-merge-hidden', entry.isIntersecting));
 
-  injectStyles();
-  new MutationObserver(schedule).observe(document.documentElement, { childList: true, subtree: true, characterData: true });
-  addEventListener('resize', place);
-  schedule();
+  GH_TWEAKS_SETTINGS.then((settings) => {
+    if (!settings.mergeBar) return;
+    injectStyles();
+    new MutationObserver(schedule).observe(document.documentElement, { childList: true, subtree: true, characterData: true });
+    addEventListener('resize', place);
+    schedule();
+  });
 
   function schedule() {
     if (scheduled) return;
