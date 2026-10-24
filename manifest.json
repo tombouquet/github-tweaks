@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "GitHub Tweaks",
-  "version": "1.3.0",
-  "description": "PR image lightbox, a Submit review button on the Conversation tab, file-type filters with review progress on Files changed, absolute dates everywhere, and file icons, image thumbnails downloads and quick view in repo file lists.",
+  "version": "1.4.0",
+  "description": "PR image lightbox, a Submit review button and a sticky merge status bar on the Conversation tab, file-type filters with review progress on Files changed, absolute dates everywhere, and file icons, image thumbnails downloads and quick view in repo file lists.",
   "content_scripts": [
     {
       "matches": [
@@ -14,7 +14,8 @@
         "src/absolute-dates.js",
         "src/file-icons-data.js",
         "vendor/highlight.min.js",
-        "src/repo-files.js"
+        "src/repo-files.js",
+        "src/merge-bar.js"
       ],
       "run_at": "document_idle"
     }

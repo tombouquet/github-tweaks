@@ -220,6 +220,7 @@
         margin-top: 10px;
         font-size: 12px;
         line-height: 18px;
+        animation: gh-tweaks-drop-in 220ms ease-out backwards;
       }
       .gh-tweaks-chips { display: flex; flex-wrap: wrap; gap: 6px; }
       .gh-tweaks-chips button {
@@ -295,10 +296,19 @@
         box-shadow: var(--shadow-floating-medium, 0 8px 24px rgba(37, 41, 46, 0.2));
         cursor: pointer;
         transition: background-color 80ms, transform 80ms;
+        animation: gh-tweaks-rise-in 280ms cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
       }
       .gh-tweaks-review-button:hover { background: var(--button-primary-bgColor-hover, #1c8139); }
       .gh-tweaks-review-button:active { transform: translateY(1px); }
       .gh-tweaks-review-button:focus-visible { outline: 2px solid var(--focus-outlineColor, #0969da); outline-offset: 2px; }
+      /* Entry animations for everything the extension adds after the page loads. */
+      @keyframes gh-tweaks-drop-in { from { opacity: 0; transform: translateY(-4px); } }
+      /* Slide only, no fade, so shadows show at full strength straight away. */
+      @keyframes gh-tweaks-rise-in { from { transform: translateY(96px); } }
+      @keyframes gh-tweaks-fade-in { from { opacity: 0; } }
+      @media (prefers-reduced-motion: reduce) {
+        [class*="gh-tweaks"], [class*="gh-tweaks"]::before, [class*="gh-tweaks"]::after { animation: none !important; transition: none !important; }
+      }
     `;
     document.documentElement.append(style);
   }

@@ -378,7 +378,7 @@
     const style = document.createElement('style');
     style.textContent = `
       svg[${DONE_ATTR}] { display: none !important; }
-      .gh-tweaks-file-icon { width: 16px; height: 16px; flex-shrink: 0; vertical-align: text-bottom; }
+      .gh-tweaks-file-icon { width: 16px; height: 16px; flex-shrink: 0; vertical-align: text-bottom; animation: gh-tweaks-fade-in 200ms ease-out backwards; }
       .gh-tweaks-thumb {
         object-fit: cover;
         border-radius: 3px;
@@ -503,6 +503,7 @@
       .gh-tweaks-qv header .gh-tweaks-row-button::after { top: calc(100% + 6px); bottom: auto; }
       .gh-tweaks-qv-close::after { left: auto !important; right: 0; transform: none !important; }
       .gh-tweaks-qv-body { flex: 1; overflow: auto; }
+      .gh-tweaks-qv-body > * { animation: gh-tweaks-fade-in 160ms ease-out backwards; }
       .gh-tweaks-qv-code { display: flex; min-width: max-content; min-height: 100%; }
       .gh-tweaks-qv-code pre {
         margin: 0;
