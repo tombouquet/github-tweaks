@@ -45,6 +45,7 @@
   }
 
   function apply() {
+    if (!chrome.runtime?.id) return; // extension was reloaded, this tab's copy is orphaned
     for (const column of document.querySelectorAll(`.react-directory-filename-column:not([${DONE_ATTR}])`)) {
       const link = column.querySelector('a[href*="/blob/"], a[href*="/tree/"]');
       if (!link) continue;
@@ -124,6 +125,7 @@
 
   // Clicking a file row anywhere outside its links and buttons opens quick view.
   function onRowClick(event) {
+    if (!chrome.runtime?.id) return;
     if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     const row = event.target.closest('.react-directory-row');
     if (!row || event.target.closest('a, button, input, label')) return;
