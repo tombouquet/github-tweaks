@@ -6,6 +6,8 @@ Chrome extension with a few fixes for GitHub:
 - **Submit review from Conversation:** a floating button on the Conversation tab that jumps to Files changed with the review dialog already open.
 - **Sticky merge bar:** a bar at the bottom of the Conversation tab shows whether checks passed, reviews and conflicts, with the merge button, so you don't have to scroll to the bottom.
 - **File triage:** filter chips above the file tree that hide lockfiles, generated files, tests, docs, config or source, with a review progress bar that counts only the files still shown.
+- **Rich Markdown review:** Markdown files on Files changed open as rich diffs, and you can select rendered paragraphs, list items or table rows to comment on their source lines.
+- **No Copilot:** Copilot buttons (header chat, Copilot panel, "Ask about this diff") and the Agents tab are hidden.
 - **Absolute dates:** every timestamp on github.com shows the real time and date, such as `4:29PM 16/10/2026`, instead of "last week".
 - **File icons:** VS Code-style icons ([Material Icon Theme](https://github.com/material-extensions/vscode-material-icon-theme)) in repo file lists, the file tree and the PR file tree.
 - **Image thumbnails:** image files in a file list show a small preview in place of their icon. Hover it to enlarge.
@@ -55,6 +57,12 @@ On Files changed, chips under the file filter group the PR's files into Lockfile
 
 The bar under the chips shows how many of the files still shown you've marked as Viewed, and how many are hidden.
 
+### Rich Markdown review
+
+On a PR's Files changed tab, `.md`, `.mdx` and `.markdown` files switch to the rich diff once when they load; switch one back to source and it stays there. In the rich diff, click a block to select it and shift-click another to extend the selection. Hover a selected block and click the blue **+** to comment: the file switches to its source diff, the matching lines are selected and GitHub's own comment form opens, ready to type. Only lines in the diff can take comments, so in an edited file only the changed blocks are selectable.
+
+Quick view in repo file lists shows Markdown rendered too.
+
 ### Absolute dates
 
 Timestamps on every GitHub page (repo home, file lists, commits, PRs, issues, Actions, releases) show `h:mmAM DD/MM/YYYY` in your local time zone. Hovering still shows GitHub's full tooltip. Durations, such as how long an Actions run took, are left as they are.
@@ -71,4 +79,6 @@ Content scripts run on `github.com`. No permissions, no build step.
 - `src/pr-review.js` watches the page with a `MutationObserver` and targets GitHub's new React PR pages (`/pull/:number` and `/pull/:number/changes`). Files are grouped by path patterns, listed in `CATEGORIES` at the top of the file. The classic signed-out `/files` page is left alone.
 - `src/absolute-dates.js` switches GitHub's `<relative-time>` elements to absolute mode, then writes the formatted text into each one, re-applying it if GitHub re-renders. The format is built by hand because `Intl` always puts a space before AM/PM.
 - `src/merge-bar.js` reads the section headings of GitHub's merge box (`[data-testid="mergebox-border-container"]`), re-reads them as the page updates, and hides the bar with an `IntersectionObserver` while the merge box is visible.
+- `src/md-review.js` reads each Markdown file's source diff lines before switching it to rich, then matches each rendered block to its lines by comparing letters and digits only. Commenting drives GitHub's own line selection and "Add comment" button.
+- `src/hide-copilot.css` hides anything with a Copilot icon, plus the Agents tab.
 - `src/repo-files.js` swaps GitHub's file octicons for icons from `icons/`, chosen by `src/file-icons-data.js`. Both are generated from the `material-icon-theme` npm package by `scripts/vendor-icons.js` (icons are MIT, see `icons/LICENSE`). Thumbnails load from `/raw/`. Folder downloads read GitHub's tree JSON and build an uncompressed ZIP in the page. Quick view highlights with a bundled copy of [highlight.js](https://highlightjs.org) (`vendor/`, BSD-3-Clause), coloured with GitHub's `--color-prettylights-syntax-*` variables so it follows your theme.

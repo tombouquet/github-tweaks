@@ -6,6 +6,7 @@
   const DONE_ATTR = 'data-gh-tweaks-icon';
   const IMAGE_EXT = /\.(png|jpe?g|gif|webp|avif|svg|ico|bmp)$/i;
   const ICONS = globalThis.GH_TWEAKS_ICONS;
+  const MARKDOWN_EXT = /\.(md|mdx|markdown)$/i;
   const MAX_VIEW_BYTES = 5 * 1024 * 1024;
   const MAX_HIGHLIGHT_BYTES = 500 * 1024;
   // Octicons (MIT): download, copy, link-external, x.
@@ -205,6 +206,18 @@
         setTimeout(() => (copy.dataset.tooltip = 'Copy contents'), 1500);
       };
 
+      // Markdown shows rendered, using the HTML GitHub's file page would show.
+      const rendered = MARKDOWN_EXT.test(name) && (await renderedMarkdown(pathname));
+      if (dialog.querySelector('.gh-tweaks-qv-open').getAttribute('href') !== pathname) return;
+      if (rendered) {
+        const article = document.createElement('div');
+        article.className = 'gh-tweaks-qv-markdown';
+        article.innerHTML = rendered;
+        body.replaceChildren(article);
+        body.scrollTop = 0;
+        return;
+      }
+
       const gutter = document.createElement('pre');
       gutter.className = 'gh-tweaks-qv-gutter';
       gutter.textContent = lines.map((_, i) => i + 1).join('\n');
@@ -222,6 +235,15 @@
       body.scrollTop = 0;
     } catch (error) {
       body.replaceChildren(message(`Couldn't load the file: ${error.message}`));
+    }
+  }
+
+  async function renderedMarkdown(pathname) {
+    try {
+      const response = await fetch(pathname, { headers: { Accept: 'application/json' } });
+      return (await response.json()).payload.codeViewBlobRoute.richText || null;
+    } catch {
+      return null;
     }
   }
 
@@ -503,6 +525,8 @@
       .gh-tweaks-qv header .gh-tweaks-row-button::after { top: calc(100% + 6px); bottom: auto; }
       .gh-tweaks-qv-close::after { left: auto !important; right: 0; transform: none !important; }
       .gh-tweaks-qv-body { flex: 1; overflow: auto; }
+      .gh-tweaks-qv-markdown { padding: 24px 32px 32px; }
+      .gh-tweaks-qv-markdown > .markdown-body { max-width: 900px; margin: 0 auto; }
       .gh-tweaks-qv-body > * { animation: gh-tweaks-fade-in 160ms ease-out backwards; }
       .gh-tweaks-qv-code { display: flex; min-width: max-content; min-height: 100%; }
       .gh-tweaks-qv-code pre {
