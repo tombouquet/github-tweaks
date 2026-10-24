@@ -54,6 +54,7 @@
       const thumb = settings.thumbnails && IMAGE_EXT.test(link.title) ? link.pathname.replace('/blob/', '/raw/') : null;
       if (octicon && (thumb || settings.fileIcons)) replaceIcon(octicon, link.title, thumb);
       if (settings.downloads) column.querySelector(':scope > .overflow-hidden')?.after(rowActions(link.pathname, isFile));
+      if (settings.quickView && isFile) column.closest('.react-directory-row')?.setAttribute('data-gh-tweaks-quick-view', '');
     }
     if (!settings.fileIcons) return;
 
@@ -452,6 +453,7 @@
         transition: opacity 80ms ease, background-color 80ms ease;
       }
       .gh-tweaks-row-button:hover { background: var(--bgColor-neutral-muted, rgba(175,184,193,.2)); color: var(--fgColor-default, #1f2328); }
+      .react-directory-row[data-gh-tweaks-quick-view] { cursor: pointer; }
       .gh-tweaks-actions {
         display: inline-flex;
         flex-shrink: 0;
