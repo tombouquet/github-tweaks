@@ -23,7 +23,18 @@
         box.className = 'box';
         container.append(heading, box);
       }
-      box.append(row(feature, settings[feature.key]));
+      const toggle = row(feature, settings[feature.key]);
+      box.append(toggle);
+      if (feature.choice) {
+        const select = choiceRow(feature.choice, settings[feature.choice.key]);
+        box.append(select.parentElement);
+        // The dropdown only matters while its tweak is on.
+        const input = toggle.querySelector('input');
+        select.disabled = !input.checked;
+        input.addEventListener('change', () => {
+          select.disabled = !input.checked;
+        });
+      }
     }
   });
 
@@ -45,5 +56,26 @@
     });
     row.append(text, input);
     return row;
+  }
+
+  // A dropdown row under a switch. Each option shows the current time in that
+  // format, so the list doubles as a preview.
+  function choiceRow({ key, label, options }, value) {
+    const row = document.createElement('label');
+    row.className = 'row choice';
+    const text = document.createElement('span');
+    text.className = 'text label';
+    text.textContent = label;
+    const select = document.createElement('select');
+    const now = new Date();
+    for (const option of options) {
+      select.append(new Option(option.format(now), option.key, false, option.key === value));
+    }
+    select.addEventListener('change', () => {
+      chrome.storage.sync.set({ [key]: select.value });
+      flash.hidden = false;
+    });
+    row.append(text, select);
+    return select;
   }
 })();

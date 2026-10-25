@@ -3,16 +3,19 @@
 
   // GitHub renders every timestamp with the <relative-time> element. We switch
   // it to its absolute "datetime" mode (so it stops re-rendering as "2 minutes
-  // ago") and then replace its text with our own "4:29PM 16/10/2026", since
-  // Intl can't drop the space before AM/PM.
+  // ago") and then replace its text with the format picked in the popup
+  // (GH_TWEAKS_DATE_FORMATS in src/settings.js).
   const DONE_ATTR = 'data-gh-tweaks-date';
   // Durations ("3m 12s" on Actions runs) aren't dates, so leave them alone.
   const DURATION_FORMATS = new Set(['duration', 'elapsed']);
 
   let scheduled = false;
+  let formatDate = GH_TWEAKS_DATE_FORMATS[0].format;
 
   GH_TWEAKS_SETTINGS.then((settings) => {
     if (!settings.absoluteDates) return;
+    const chosen = GH_TWEAKS_DATE_FORMATS.find(({ key }) => key === settings.dateFormat);
+    if (chosen) formatDate = chosen.format;
     injectStyles();
     new MutationObserver(schedule).observe(document.documentElement, { childList: true, subtree: true });
     apply();
@@ -52,15 +55,6 @@
     const text = formatDate(date);
     const target = element.shadowRoot ?? element;
     if (target.textContent !== text) target.textContent = text;
-  }
-
-  // h:mmAM DD/MM/YYYY in local time.
-  function formatDate(date) {
-    const pad = (n) => String(n).padStart(2, '0');
-    const hours = date.getHours();
-    const hour12 = hours % 12 || 12;
-    const suffix = hours < 12 ? 'AM' : 'PM';
-    return `${hour12}:${pad(date.getMinutes())}${suffix} ${pad(date.getDate())}/${pad(date.getMonth() + 1)}/${date.getFullYear()}`;
   }
 
   function injectStyles() {

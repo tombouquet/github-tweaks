@@ -8,7 +8,7 @@ Chrome extension with a few fixes for GitHub:
 - **File triage:** filter chips above the file tree that hide lockfiles, generated files, tests, docs, config or source, with a review progress bar that counts only the files still shown.
 - **Rich Markdown review:** Markdown files on Files changed open as rich diffs, and you can select rendered paragraphs, list items or table rows to comment on their source lines.
 - **No Copilot:** Copilot buttons (header chat, Copilot panel, "Ask about this diff") and the Agents tab are hidden.
-- **Absolute dates:** every timestamp on github.com shows the real time and date, such as `4:29PM 16/10/2026`, instead of "last week".
+- **Absolute dates:** every timestamp on github.com shows the real time and date, such as `4:29PM Oct 16, 2026`, instead of "last week".
 - **File icons:** VS Code-style icons ([Material Icon Theme](https://github.com/material-extensions/vscode-material-icon-theme)) in repo file lists, the file tree and the PR file tree.
 - **Image thumbnails:** image files in a file list show a small preview in place of their icon. Hover it to enlarge.
 - **Download files and folders:** a download button on every file list row. Folders download as a ZIP, with no clone needed.
@@ -67,7 +67,7 @@ Quick view in repo file lists shows Markdown rendered too.
 
 ### Absolute dates
 
-Timestamps on every GitHub page (repo home, file lists, commits, PRs, issues, Actions, releases) show `h:mmAM DD/MM/YYYY` in your local time zone. Hovering still shows GitHub's full tooltip. Durations, such as how long an Actions run took, are left as they are.
+Timestamps on every GitHub page (repo home, file lists, commits, PRs, issues, Actions, releases) show `4:29PM Oct 16, 2026` in your local time zone by default. Pick another format, such as `Oct 16, 2026 4:29PM`, `YYYY-MM-DD HH:mm` or date only, from the dropdown under Absolute dates in the popup. Hovering still shows GitHub's full tooltip. Durations, such as how long an Actions run took, are left as they are.
 
 ### File icons, thumbnails, downloads and quick view
 
@@ -81,7 +81,7 @@ Content scripts run on `github.com`. The only permission is `storage`, for the p
 
 - `src/content.js` intercepts clicks on `.markdown-body img` when the URL is a PR (`/:owner/:repo/pull/:number`) and renders the viewer inside a Shadow DOM, so GitHub's styles don't leak in.
 - `src/pr-review.js` watches the page with a `MutationObserver` and targets GitHub's new React PR pages (`/pull/:number` and `/pull/:number/changes`). Files are grouped by path patterns, listed in `CATEGORIES` at the top of the file. The classic signed-out `/files` page is left alone.
-- `src/absolute-dates.js` switches GitHub's `<relative-time>` elements to absolute mode, then writes the formatted text into each one, re-applying it if GitHub re-renders. The format is built by hand because `Intl` always puts a space before AM/PM.
+- `src/absolute-dates.js` switches GitHub's `<relative-time>` elements to absolute mode, then writes the formatted text into each one, re-applying it if GitHub re-renders. The formats live in `src/settings.js` so the popup can preview them, and are built by hand because `Intl` always puts a space before AM/PM.
 - `src/merge-bar.js` reads the section headings of GitHub's merge box (`[data-testid="mergebox-border-container"]`), re-reads them as the page updates, and hides the bar with an `IntersectionObserver` while the merge box is visible.
 - `src/md-review.js` reads each Markdown file's source diff lines before switching it to rich, then matches each rendered block to its lines by comparing letters and digits only. Commenting drives GitHub's own line selection and "Add comment" button.
 - `src/hide-copilot.css` hides anything with a Copilot icon, plus the Agents tab.

@@ -60,6 +60,24 @@
   .text { flex: 1; min-width: 0; }
   .label { display: block; font-weight: 600; }
   .description { display: block; color: var(--fg-muted); font-size: 12px; }
+  .row.choice { padding-left: 32px; cursor: default; }
+  .row.choice:hover { background: none; }
+  .row.choice .label { font-weight: 400; }
+  .row.choice:has(select:disabled) .label { color: var(--fg-muted); }
+  select {
+    max-width: 200px;
+    padding: 3px 8px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--button-bg);
+    color: var(--fg);
+    font: inherit;
+    font-size: 12px;
+    line-height: 20px;
+    cursor: pointer;
+  }
+  select:disabled { opacity: 0.5; cursor: not-allowed; }
+  select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   input[role="switch"] {
     appearance: none;
     flex: none;
