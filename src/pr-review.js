@@ -23,6 +23,8 @@
   let toolbar = null;
   let scheduled = false;
   let settings;
+  let knownFiles = new Set();
+  let knownFilesPath = null;
 
   GH_TWEAKS_SETTINGS.then((loaded) => {
     settings = loaded;
@@ -104,17 +106,46 @@
     const tree = document.querySelector('#pr-file-tree');
     if (!tree) return;
 
-    // Tree leaves are the <li>s without aria-expanded; their id is the file path.
-    const treeFiles = [...tree.querySelectorAll('li[role="treeitem"]:not([aria-expanded])')];
+    // A collapsed folder drops its children from the DOM, so remember every path seen on this PR.
+    if (knownFilesPath !== location.pathname) {
+      knownFilesPath = location.pathname;
+      knownFiles = new Set();
+    }
+
+    // Tree items have their path as id; folders carry aria-expanded, files don't.
+    const treeItems = [...tree.querySelectorAll('li[role="treeitem"]')];
     const diffs = [...document.querySelectorAll('[data-testid="progressive-diffs-list"] > div')]
       .map((entry) => ({ entry, path: diffPath(entry) }))
       .filter((diff) => diff.path);
+    for (const li of treeItems) if (!li.hasAttribute('aria-expanded')) knownFiles.add(li.id);
+    for (const { path } of diffs) knownFiles.add(path);
 
     const counts = new Map();
-    for (const li of treeFiles) {
-      const category = categorize(li.id);
+    let hiddenCount = 0;
+    for (const path of knownFiles) {
+      const category = categorize(path);
       counts.set(category, (counts.get(category) ?? 0) + 1);
-      setHidden(li, hidden.has(category));
+      if (hidden.has(category)) hiddenCount++;
+    }
+
+    for (const li of treeItems) {
+      if (!li.hasAttribute('aria-expanded')) {
+        setHidden(li, hidden.has(categorize(li.id)));
+        continue;
+      }
+      // Hide a folder only when every file known under it is hidden.
+      const prefix = `${li.id}/`;
+      let any = false;
+      let allHidden = true;
+      for (const path of knownFiles) {
+        if (!path.startsWith(prefix)) continue;
+        any = true;
+        if (!hidden.has(categorize(path))) {
+          allHidden = false;
+          break;
+        }
+      }
+      setHidden(li, any && allHidden);
     }
 
     let total = 0;
@@ -129,7 +160,7 @@
       if (toggle?.getAttribute('aria-pressed') === 'true') viewed++;
     }
 
-    renderToolbar(tree, counts, viewed, total, treeFiles.length - total);
+    renderToolbar(tree, counts, viewed, total, hiddenCount);
   }
 
   function diffPath(entry) {
@@ -213,10 +244,6 @@
     const style = document.createElement('style');
     style.textContent = `
       [${HIDDEN_ATTR}] { display: none !important; }
-      /* Hide folders whose files are all hidden. */
-      #pr-file-tree li[role="treeitem"][aria-expanded]:not(:has(li[role="treeitem"]:not([aria-expanded]):not([${HIDDEN_ATTR}]))) {
-        display: none !important;
-      }
       .gh-tweaks-triage {
         display: flex;
         flex-direction: column;
