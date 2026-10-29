@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  // On Fridays, a banner above a PR's merge box asks whether you really want to
+  // On Fridays, a banner in a PR's merge card, just above the merge button, asks whether you really want to
   // merge, getting more worried as the day goes on. The sticky merge bar's button
   // reads "… on a Friday?" too.
   const CONVERSATION_PATH = /^\/[^/]+\/[^/]+\/pull\/\d+\/?$/;
@@ -68,9 +68,8 @@
     const now = new Date();
     const friday = now.getDay() === 5;
     document.documentElement.toggleAttribute(FRIDAY_ATTR, friday);
-    // The merge box's own wrapper, so the banner lines up with the box rather than its icon.
-    const box = friday && CONVERSATION_PATH.test(location.pathname) && document.querySelector('[data-testid="mergebox-border-container"]')?.parentElement;
-    if (!box) {
+    const footer = friday && CONVERSATION_PATH.test(location.pathname) && mergeFooter();
+    if (!footer) {
       banner?.remove();
       return;
     }
@@ -80,7 +79,16 @@
     banner.querySelector('.gh-tweaks-friday-emoji').textContent = emoji;
     banner.querySelector('strong').textContent = headline;
     banner.querySelector('.gh-tweaks-friday-detail').textContent = detail;
-    if (banner.nextElementSibling !== box) box.before(banner);
+    if (footer.firstElementChild !== banner) footer.prepend(banner);
+  }
+
+  // The merge card's footer, which holds the merge button. Falls back to the card's
+  // last section when GitHub shows no merge button, such as on a PR with conflicts.
+  function mergeFooter() {
+    const card = document.querySelector('[data-testid="mergebox-border-container"]');
+    if (!card) return null;
+    const button = [...card.querySelectorAll('button')].find((b) => /merge/i.test(b.textContent) && !/^rebase|command line/i.test(b.textContent.trim()));
+    return [...card.children].find((section) => section.contains(button)) ?? card.lastElementChild;
   }
 
   function createBanner() {
@@ -98,8 +106,8 @@
         display: flex;
         align-items: center;
         gap: 12px;
-        margin: 0 0 16px;
-        padding: 12px 16px;
+        margin: 0 0 12px;
+        padding: 10px 12px;
         border: 1px solid var(--borderColor-attention-muted, #d4a72c66);
         border-radius: 6px;
         background: var(--bgColor-attention-muted, #fff8c5);
