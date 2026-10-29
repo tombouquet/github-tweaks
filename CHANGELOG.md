@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.11.1](https://github.com/tombouquet/github-tweaks/compare/v1.11.0...v1.11.1) (2026-10-29)
+
+
+### Bug Fixes
+
+* single space before "on a Friday?" in the merge bar button ([fea8e96](https://github.com/tombouquet/github-tweaks/commit/fea8e96e09937d6541839134dec0687e337553e9))
+
 ## [1.11.0](https://github.com/tombouquet/github-tweaks/compare/v1.10.0...v1.11.0) (2026-10-29)
 
 
