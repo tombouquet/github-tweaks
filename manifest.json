@@ -31,6 +31,7 @@
       "js": [
         "src/settings.js",
         "src/content.js",
+        "vendor/confetti.min.js",
         "src/pr-review.js",
         "src/absolute-dates.js",
         "src/file-icons-data.js",

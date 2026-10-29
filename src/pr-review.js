@@ -64,36 +64,112 @@
 
   // --- Review button on the Conversation tab --------------------------------
 
-  let reviewButton = null;
+  const LGTM = 'lgtm';
+  let reviewActions = null;
 
   function updateReviewButton(show) {
     if (!show) {
-      reviewButton?.remove();
+      reviewActions?.remove();
       return;
     }
-    if (!reviewButton) {
-      reviewButton = document.createElement('button');
-      reviewButton.type = 'button';
-      reviewButton.className = 'gh-tweaks-review-button';
+    if (!reviewActions) {
+      reviewActions = document.createElement('div');
+      reviewActions.className = 'gh-tweaks-review-actions';
+      // Octicon check (MIT).
+      const lgtm = createReviewButton(
+        'gh-tweaks-review-button gh-tweaks-lgtm-button',
+        '<svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"/></svg><span>LGTM</span>',
+        'Approve this PR with an "LGTM" comment',
+        LGTM,
+      );
       // Octicon code-review (MIT).
-      reviewButton.innerHTML =
-        '<svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M1.75 1h12.5c.966 0 1.75.784 1.75 1.75v8.5A1.75 1.75 0 0 1 14.25 13H8.061l-2.574 2.573A1.458 1.458 0 0 1 3 14.543V13H1.75A1.75 1.75 0 0 1 0 11.25v-8.5C0 1.784.784 1 1.75 1ZM1.5 2.75v8.5c0 .138.112.25.25.25h2a.75.75 0 0 1 .75.75v2.19l2.72-2.72a.749.749 0 0 1 .53-.22h6.5a.25.25 0 0 0 .25-.25v-8.5a.25.25 0 0 0-.25-.25H1.75a.25.25 0 0 0-.25.25Zm5.28 1.72a.75.75 0 0 1 0 1.06L5.31 7l1.47 1.47a.751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018l-2-2a.75.75 0 0 1 0-1.06l2-2a.75.75 0 0 1 1.06 0Zm2.44 0a.75.75 0 0 1 1.06 0l2 2a.75.75 0 0 1 0 1.06l-2 2a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L10.69 7 9.22 5.53a.75.75 0 0 1 0-1.06Z"/></svg><span>Submit review</span>';
-      reviewButton.title = 'Open the review dialog on the Files changed tab';
-      reviewButton.addEventListener('click', () => {
-        sessionStorage.setItem(OPEN_REVIEW_KEY, '1');
-        location.assign(`${location.pathname.replace(/\/$/, '')}/changes`);
-      });
+      const review = createReviewButton(
+        'gh-tweaks-review-button',
+        '<svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M1.75 1h12.5c.966 0 1.75.784 1.75 1.75v8.5A1.75 1.75 0 0 1 14.25 13H8.061l-2.574 2.573A1.458 1.458 0 0 1 3 14.543V13H1.75A1.75 1.75 0 0 1 0 11.25v-8.5C0 1.784.784 1 1.75 1ZM1.5 2.75v8.5c0 .138.112.25.25.25h2a.75.75 0 0 1 .75.75v2.19l2.72-2.72a.749.749 0 0 1 .53-.22h6.5a.25.25 0 0 0 .25-.25v-8.5a.25.25 0 0 0-.25-.25H1.75a.25.25 0 0 0-.25.25Zm5.28 1.72a.75.75 0 0 1 0 1.06L5.31 7l1.47 1.47a.751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018l-2-2a.75.75 0 0 1 0-1.06l2-2a.75.75 0 0 1 1.06 0Zm2.44 0a.75.75 0 0 1 1.06 0l2 2a.75.75 0 0 1 0 1.06l-2 2a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L10.69 7 9.22 5.53a.75.75 0 0 1 0-1.06Z"/></svg><span>Submit review</span>',
+        'Open the review dialog on the Files changed tab',
+        '1',
+      );
+      reviewActions.append(lgtm, review);
     }
     // Attached to <html> so swapping <body> during navigation doesn't drop it.
-    if (!reviewButton.isConnected) document.documentElement.append(reviewButton);
+    if (!reviewActions.isConnected) document.documentElement.append(reviewActions);
+  }
+
+  function createReviewButton(className, html, title, mode) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = className;
+    button.innerHTML = html;
+    button.title = title;
+    button.addEventListener('click', () => {
+      sessionStorage.setItem(OPEN_REVIEW_KEY, mode);
+      location.assign(`${location.pathname.replace(/\/$/, '')}/changes`);
+    });
+    return button;
   }
 
   function openPendingReview() {
-    if (!sessionStorage.getItem(OPEN_REVIEW_KEY)) return;
+    const mode = sessionStorage.getItem(OPEN_REVIEW_KEY);
+    if (!mode) return;
     const button = document.querySelector('button[class*="ReviewMenuButton"]');
     if (!button) return;
     sessionStorage.removeItem(OPEN_REVIEW_KEY);
     button.click();
+    if (mode === LGTM) submitLgtm();
+  }
+
+  // Fills GitHub's review dialog with "LGTM", picks Approve, submits and throws confetti. Stops with
+  // the dialog open if any step is missing, such as Approve on your own PR.
+  async function submitLgtm() {
+    const textarea = await waitFor(() => reviewDialog()?.querySelector('textarea'));
+    if (!textarea) return;
+    const dialog = reviewDialog();
+    // Sets the value through the native setter so React sees the change.
+    Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value').set.call(textarea, 'LGTM');
+    textarea.dispatchEvent(new Event('input', { bubbles: true }));
+
+    const approve = [...dialog.querySelectorAll('input[type="radio"]')].find(
+      (radio) => /approve/i.test(radio.value) || /^approve/i.test(radio.labels?.[0]?.textContent.trim() ?? ''),
+    );
+    if (!approve || approve.disabled) return;
+    approve.click();
+
+    const submit = await waitFor(() =>
+      [...dialog.querySelectorAll('button')].find((b) => /^submit review$/i.test(b.textContent.trim()) && !b.disabled),
+    );
+    if (!submit) return;
+    submit.click();
+
+    // Celebrate once GitHub closes the dialog, which means the review went through.
+    const closed = await waitFor(() => !reviewDialog(), 10000);
+    if (closed) celebrate();
+  }
+
+  function celebrate() {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const bursts = [
+      { x: 0.5, y: 0.5 },
+      { x: 0.25, y: 0.4 },
+      { x: 0.75, y: 0.35 },
+    ];
+    bursts.forEach(({ x, y }, i) => {
+      setTimeout(() => confetti({ position: { x: innerWidth * x, y: innerHeight * y }, count: 120 }), i * 250);
+    });
+  }
+
+  function reviewDialog() {
+    return [...document.querySelectorAll('[role="dialog"]')].find((d) => d.querySelector('textarea'));
+  }
+
+  // Polls until check() returns something, or gives up after a few seconds.
+  async function waitFor(check, timeout = 5000) {
+    const until = Date.now() + timeout;
+    while (Date.now() < until) {
+      const found = check();
+      if (found) return found;
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    }
+    return null;
   }
 
   // --- File triage on the Files changed tab ----------------------------------
@@ -310,11 +386,15 @@
         transition: width 200ms ease-out;
       }
       .gh-tweaks-label { flex: none; font-variant-numeric: tabular-nums; }
-      .gh-tweaks-review-button {
+      .gh-tweaks-review-actions {
         position: fixed;
         right: 24px;
         bottom: 24px;
         z-index: 100;
+        display: flex;
+        gap: 8px;
+      }
+      .gh-tweaks-review-button {
         display: inline-flex;
         align-items: center;
         gap: 8px;
@@ -333,6 +413,34 @@
       .gh-tweaks-review-button:hover { background: var(--button-primary-bgColor-hover, #1c8139); }
       .gh-tweaks-review-button:active { transform: translateY(1px); }
       .gh-tweaks-review-button:focus-visible { outline: 2px solid var(--focus-outlineColor, #0969da); outline-offset: 2px; }
+      /* Outline at rest. On hover it grows with a slight lift and tilt, a rainbow sweeps across and the tick wiggles.
+         The rainbow runs paused alongside the entry animation, so hover only toggles its
+         play state. Swapping the animation would replay the entry slide on hover end. */
+      .gh-tweaks-lgtm-button {
+        border-color: var(--fgColor-success, #1a7f37);
+        background: var(--bgColor-default, #fff);
+        color: var(--fgColor-success, #1a7f37);
+        transition: background-color 80ms, color 80ms, border-color 80ms, transform 160ms ease;
+        animation:
+          gh-tweaks-rise-in 280ms cubic-bezier(0.2, 0.8, 0.2, 1) backwards,
+          gh-tweaks-lgtm-rainbow 1.6s linear infinite paused;
+      }
+      .gh-tweaks-lgtm-button:hover {
+        border-color: transparent;
+        background-image: linear-gradient(110deg, #1f883d, #2da44e, #0969da, #8250df, #bf3989, #fb8500, #1f883d);
+        background-size: 300% 100%;
+        color: #fff;
+        transform: translateY(-2px) rotate(-2deg) scale(1.1);
+        animation-play-state: running;
+      }
+      .gh-tweaks-lgtm-button:active { transform: translateY(-1px) rotate(-1deg) scale(1.05); }
+      .gh-tweaks-lgtm-button:hover svg { animation: gh-tweaks-lgtm-tick 600ms cubic-bezier(0.3, 1.6, 0.5, 1); }
+      @keyframes gh-tweaks-lgtm-rainbow { to { background-position: 150% 0; } }
+      @keyframes gh-tweaks-lgtm-tick {
+        0%, 100% { transform: scale(1) rotate(0); }
+        40% { transform: scale(1.3) rotate(-20deg); }
+        70% { transform: scale(1.15) rotate(12deg); }
+      }
       /* Entry animations for everything the extension adds after the page loads. */
       @keyframes gh-tweaks-drop-in { from { opacity: 0; transform: translateY(-4px); } }
       /* Slide only, no fade, so shadows show at full strength straight away. */

@@ -296,9 +296,9 @@
         cursor: inherit;
       }
       @media (max-width: 767px) { .gh-tweaks-merge-chips { display: none; } }
-      /* Keep the Submit review button clear of the bar once the sidebar stacks below the timeline. */
+      /* Keep the Submit review and LGTM buttons clear of the bar once the sidebar stacks below the timeline. */
       @media (max-width: 1011px) {
-        html:has(.gh-tweaks-merge-bar:not(.gh-tweaks-merge-hidden)) .gh-tweaks-review-button { bottom: 88px; }
+        html:has(.gh-tweaks-merge-bar:not(.gh-tweaks-merge-hidden)) .gh-tweaks-review-actions { bottom: 88px; }
       }
     `;
     document.documentElement.append(style);
