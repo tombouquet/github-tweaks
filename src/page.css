@@ -42,8 +42,10 @@ body {
   color: var(--fg);
   font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
 }
-header { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
-header img { width: 32px; height: 32px; }
+/* Text sits on the title's baseline, so the smaller version reads as level with it; the icon stays centred. */
+header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 8px; }
+header img { width: 32px; height: 32px; align-self: center; }
+.header-link { align-self: center; }
 h1 { margin: 0; font-size: 24px; font-weight: 600; }
 .intro { margin: 0 0 24px; color: var(--fg-muted); }
 code { padding: 1px 5px; border-radius: 4px; background: var(--bg-muted); font: 12px ui-monospace, SFMono-Regular, Menlo, monospace; }
