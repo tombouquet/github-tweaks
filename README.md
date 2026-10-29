@@ -34,7 +34,7 @@ Reload any open GitHub tabs afterwards. The changelog opens in a new tab.
 
 ## Updating
 
-Chrome doesn't update unpacked extensions on its own, so the extension checks the latest GitHub release every few hours and when you open the popup. When a newer version is out you get a `↑` badge on the toolbar icon, one desktop notification, and a banner in the popup. To update:
+Chrome doesn't update unpacked extensions on its own, so the extension checks the latest GitHub release every hour and when you open the popup. When a newer version is out you get a `↑` badge on the toolbar icon, one desktop notification, and a banner in the popup. To update:
 
 1. Run `git pull` in your clone (or download the new zip and unzip it over the old folder).
 2. Click **Reload extension** in the popup's banner, or the reload button on `chrome://extensions`.

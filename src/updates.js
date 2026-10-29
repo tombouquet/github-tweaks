@@ -5,7 +5,7 @@
 const UPDATE_KEY = GH_TWEAKS_UPDATE_KEY;
 const RELEASES_URL = 'https://api.github.com/repos/tombouquet/github-tweaks/releases/latest';
 const CHECK_ALARM = 'update-check';
-const CHECK_EVERY_MINUTES = 360;
+const CHECK_EVERY_MINUTES = 60;
 // The popup asks for a fresh check when it opens, but not more often than this.
 const POPUP_CHECK_AFTER_MS = 60 * 60 * 1000;
 
