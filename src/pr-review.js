@@ -6,6 +6,7 @@
   const CONVERSATION_PATH = /^\/[^/]+\/[^/]+\/pull\/\d+\/?$/;
   const CHANGES_PATH = /^\/[^/]+\/[^/]+\/pull\/\d+\/changes/;
   const OPEN_REVIEW_KEY = 'gh-tweaks-open-review';
+  const CELEBRATE_KEY = 'gh-tweaks-celebrate';
   const HIDDEN_KEY = 'gh-tweaks-hidden-categories';
   const HIDDEN_ATTR = 'data-gh-tweaks-hidden';
 
@@ -52,6 +53,7 @@
   function update() {
     const path = location.pathname;
     if (settings.reviewButton) updateReviewButton(CONVERSATION_PATH.test(path) && isSignedIn());
+    if (settings.reviewButton && CONVERSATION_PATH.test(path)) celebratePendingLgtm();
     if (CHANGES_PATH.test(path)) {
       if (settings.reviewButton) openPendingReview();
       if (settings.fileTriage) updateTriage();
@@ -136,6 +138,9 @@
     // Gives React a frame to take in the text and the Approve choice.
     await new Promise((resolve) => setTimeout(resolve, 150));
 
+    // GitHub returns to the Conversation tab after submitting, which throws the confetti.
+    sessionStorage.setItem(CELEBRATE_KEY, String(Date.now()));
+
     // Submits with Cmd+Enter (Ctrl+Enter elsewhere), the dialog's own shortcut.
     textarea.focus();
     const isMac = /Mac/i.test(navigator.platform);
@@ -150,10 +155,15 @@
       );
       submit?.click();
     }
+  }
 
-    // Celebrate once GitHub closes the dialog, which means the review went through.
-    const closed = await waitFor(() => !reviewDialog(), 10000);
-    if (closed) celebrate();
+  // Fires once on the Conversation tab after an LGTM submit. Old flags are dropped so
+  // a submit that failed doesn't celebrate on a later visit.
+  function celebratePendingLgtm() {
+    const submittedAt = Number(sessionStorage.getItem(CELEBRATE_KEY));
+    if (!submittedAt) return;
+    sessionStorage.removeItem(CELEBRATE_KEY);
+    if (Date.now() - submittedAt < 30000) celebrate();
   }
 
   function celebrate() {
