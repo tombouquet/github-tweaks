@@ -61,12 +61,14 @@
   }
 
   // A secondary switch under a tweak's switch, laid out like a dropdown row.
-  function subSwitchRow({ key, label }, checked) {
+  function subSwitchRow({ key, label, description }, checked) {
     const row = document.createElement('label');
     row.className = 'row choice';
     const text = document.createElement('span');
-    text.className = 'text label';
-    text.textContent = label;
+    text.className = 'text';
+    text.innerHTML = '<span class="label"></span><span class="description"></span>';
+    text.firstChild.textContent = label;
+    text.lastChild.textContent = description;
     const input = document.createElement('input');
     input.type = 'checkbox';
     input.setAttribute('role', 'switch');
