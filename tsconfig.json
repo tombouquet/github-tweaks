@@ -1,0 +1,23 @@
+{
+  "extends": "./.wxt/tsconfig.json",
+  "compilerOptions": {
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noFallthroughCasesInSwitch": true,
+    "jsx": "react-jsx",
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ],
+      "~/*": [
+        "./src/*"
+      ],
+      "@@/*": [
+        "./*"
+      ],
+      "~~/*": [
+        "./*"
+      ]
+    }
+  }
+}

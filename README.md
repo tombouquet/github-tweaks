@@ -25,10 +25,23 @@ Chrome extension with a few fixes for GitHub:
 
 ## Install
 
-1. Clone the repo (`git clone https://github.com/tombouquet/github-tweaks.git`), or download and unzip `github-tweaks-vX.Y.Z.zip` from the [latest release](https://github.com/tombouquet/github-tweaks/releases/latest). A clone is easier to update.
+The easiest way is the zip from a release, which needs no Node:
+
+1. Download `github-tweaks-vX.Y.Z.zip` from the [latest release](https://github.com/tombouquet/github-tweaks/releases/latest) and unzip it.
 2. Open `chrome://extensions`.
 3. Turn on **Developer mode** (top right).
-4. Click **Load unpacked** and pick the folder.
+4. Click **Load unpacked** and pick the unzipped folder.
+
+Or build it from a clone, with Node 26+ and pnpm:
+
+```sh
+git clone https://github.com/tombouquet/github-tweaks.git
+cd github-tweaks
+pnpm install
+pnpm build
+```
+
+Then load `.output/chrome-mv3` with **Load unpacked**.
 
 Reload any open GitHub tabs afterwards. The changelog opens in a new tab.
 
@@ -36,16 +49,24 @@ Reload any open GitHub tabs afterwards. The changelog opens in a new tab.
 
 Chrome doesn't update unpacked extensions on its own, so the extension checks the latest GitHub release every hour and when you open the popup. When a newer version is out you get a `↑` badge on the toolbar icon, one desktop notification, and a banner in the popup. To update:
 
-1. Run `git pull` in your clone (or download the new zip and unzip it over the old folder).
+1. Download the new zip and unzip it over the old folder, or run `git pull` and `pnpm build` in your clone.
 2. Click **Reload extension** in the popup's banner, or the reload button on `chrome://extensions`.
 
 The changelog opens after every version change. You can also open it from the version number in the popup or on the All tweaks page.
+
+## Development
+
+Built with [WXT](https://wxt.dev), TypeScript, React and Tailwind CSS.
+
+- `pnpm dev` opens Chrome with the extension loaded and reloads it as you edit.
+- `pnpm compile` type-checks.
+- `pnpm build` writes the extension to `.output/chrome-mv3`, and `pnpm zip` zips it.
 
 ## Releasing
 
 Releases are cut by [Release Please](https://github.com/googleapis/release-please) from [Conventional Commits](https://www.conventionalcommits.org/) on `main`. Don't bump the version by hand.
 
-1. Merge `feat:` / `fix:` PRs into `main`. Release Please keeps a "chore(main): release x.y.z" PR open that bumps `manifest.json` and adds the new `CHANGELOG.md` section. `feat` bumps the minor version and `fix` the patch.
+1. Merge `feat:` / `fix:` PRs into `main`. Release Please keeps a "chore(main): release x.y.z" PR open that bumps `package.json` (WXT reads the version from it) and adds the new `CHANGELOG.md` section. `feat` bumps the minor version and `fix` the patch.
 2. Merge that PR when you want to ship. It tags `vX.Y.Z`, creates the GitHub release with the changelog as its notes, and attaches a zip of the extension. Installed copies see the update at their next check.
 
 ## Usage
@@ -162,27 +183,26 @@ In any repo file list, click a file row anywhere outside its links to quick view
 
 ## How it works
 
-Content scripts run on `github.com`. The permissions are `storage`, for the popup settings, and `notifications`, for Notify when ready. No build step.
+One content script runs on `github.com`: `src/entrypoints/github.content/index.ts` loads the settings once and starts each tweak in `src/features/`. The permissions are `storage`, for the settings, `notifications`, for Notify when ready and update alerts, and `alarms`, for the hourly update check.
 
-- `src/settings.js` lists the tweaks and loads their on/off state from `chrome.storage.sync` (default on). Every content script waits for it before starting, and `popup.html` builds its switches from the same list.
-
-- `src/content.js` intercepts clicks on `.markdown-body img` when the URL is a PR (`/:owner/:repo/pull/:number`) and renders the viewer inside a Shadow DOM, so GitHub's styles don't leak in.
-- `src/pr-review.js` throws confetti after an LGTM with a bundled copy of [confetti.js](https://confettijs.org) (`vendor/`, ISC). It watches the page with a `MutationObserver` and targets GitHub's new React PR pages (`/pull/:number` and `/pull/:number/changes`). Files are grouped by path patterns, listed in `GH_TWEAKS_FILE_CATEGORIES` in `src/settings.js`. The classic signed-out `/files` page is left alone.
-- `src/absolute-dates.js` switches GitHub's `<relative-time>` elements to absolute mode, then writes the formatted text into each one, re-applying it if GitHub re-renders. The formats live in `src/settings.js` so the popup can preview them, and are built by hand because `Intl` always puts a space before AM/PM.
-- `src/merge-status.js` reads the section headings of GitHub's merge box (`[data-testid="mergebox-border-container"]`) into statuses for checks, review and conflicts. `src/merge-bar.js` re-reads them as the page updates and hides the bar with an `IntersectionObserver` while the merge box is visible.
-- `src/notify-ready.js` watches the same statuses and messages `src/background.js`, the extension's service worker, which shows the notification with `chrome.notifications` and focuses the PR's tab when it's clicked.
-- `src/pr-data.js` is shared by the PR header tweaks. It finds the PR in the URL and loads the JSON GitHub's own Files changed page renders from (`/pull/:number/changes` with `Accept: application/json`), cached for a minute, for the PR's commits and the commit you last reviewed.
-- `about.html` and `src/about.js` are the All tweaks page, built from `GH_TWEAKS_FEATURES` with a longer description of each tweak. It and the prompt editor share `src/page.css`.
-- `options.html` and `src/options.js` edit the Claude Code prompts, saved as `claudePrompts` in `chrome.storage.sync`. The popup's dropdown and the button read the same list.
-- `src/claude-code.js` builds `claude-cli://open?repo=owner/name&q=<prompt>` from the PR's number, title and URL, using your saved prompts, or the built-in ones in `GH_TWEAKS_CLAUDE_PROMPTS` (`src/settings.js`), and hides GitHub's Code button. The Claude logo is from [Simple Icons](https://simpleicons.org) (CC0).
-- `src/since-review.js` links to `/pull/:number/changes/<last reviewed>..<head>` using the commits from that JSON. Its button copies the classes of GitHub's Code button so it matches the header.
-- `src/hide-checks-tab.js` hides the `/checks` link in the PR's tab bar with CSS.
-- `src/merge-hint.js` hides the muted line in the merge box that holds the "View command line instructions" link.
-- `src/friday.js` checks the local day and hour on each page update and adds its row to the merge card (`[data-testid="mergebox-border-container"]`) just before the footer holding the merge button.
-- `src/md-review.js` reads each Markdown file's source diff lines before switching it to rich, then matches each rendered block to its lines by comparing letters and digits only. Commenting drives GitHub's own line selection and "Add comment" button.
-- `src/hide-copilot.css` hides anything with a Copilot icon, plus the Agents tab.
-- `src/repo-files.js` swaps GitHub's file octicons for icons from `icons/`, chosen by `src/file-icons-data.js`. Both are generated from the `material-icon-theme` npm package by `scripts/vendor-icons.js` (icons are MIT, see `icons/LICENSE`). Thumbnails load from `/raw/`. Folder downloads read GitHub's tree JSON and build an uncompressed ZIP in the page. Quick view highlights with a bundled copy of [highlight.js](https://highlightjs.org) (`vendor/`, BSD-3-Clause), coloured with GitHub's `--color-prettylights-syntax-*` variables so it follows your theme.
-- `src/jump-to-file.js` loads every path in one request from `/:owner/:repo/tree-list/:commit`, the endpoint GitHub's own file finder uses, after looking up the branch's commit in its tree JSON. Icons and Quick view come from `src/repo-files.js` through `GH_TWEAKS_FILES`.
-- `src/readme-toc.js` lists the README's `.markdown-heading` blocks (h1 to h3) in GitHub's sidebar pane, which it lets overflow so the list can stick to the page.
-- `src/md-outline.js` clicks the outline button (`button[class*="TableOfContents"]`) once per file, and saves your own opens and closes, read from its `aria-pressed`, in `localStorage`.
-- The extension icon in `images/` is drawn by `scripts/make-icon.js`.
+- `src/lib/settings.ts` lists the tweaks and loads their on/off state from `chrome.storage.sync` (default on). The popup and All tweaks page build their switches from the same list.
+- `src/features/lightbox.ts` intercepts clicks on `.markdown-body img` when the URL is a PR (`/:owner/:repo/pull/:number`) and renders the viewer inside a Shadow DOM, so GitHub's styles don't leak in.
+- `src/features/pr-review.ts` throws confetti after an LGTM with a bundled copy of [confetti.js](https://confettijs.org) (`src/vendor/`, ISC). It watches the page with a `MutationObserver` and targets GitHub's new React PR pages (`/pull/:number` and `/pull/:number/changes`). Files are grouped by path patterns, listed in `FILE_CATEGORIES` in `src/lib/settings.ts`. The classic signed-out `/files` page is left alone.
+- `src/features/absolute-dates.ts` switches GitHub's `<relative-time>` elements to absolute mode, then writes the formatted text into each one, re-applying it if GitHub re-renders. The formats live in `src/lib/settings.ts` so the popup can preview them, and are built by hand because `Intl` always puts a space before AM/PM.
+- `src/lib/merge-status.ts` reads the section headings of GitHub's merge box (`[data-testid="mergebox-border-container"]`) into statuses for checks, review and conflicts. `src/features/merge-bar.ts` re-reads them as the page updates and hides the bar with an `IntersectionObserver` while the merge box is visible.
+- `src/features/notify-ready.ts` watches the same statuses and messages `src/entrypoints/background.ts`, the extension's service worker, which shows the notification with `chrome.notifications` and focuses the PR's tab when it's clicked. The worker also runs the update check (`src/lib/updates.ts`).
+- `src/lib/pr-data.ts` is shared by the PR header tweaks. It finds the PR in the URL and loads the JSON GitHub's own Files changed page renders from (`/pull/:number/changes` with `Accept: application/json`), cached for a minute, for the PR's commits and the commit you last reviewed.
+- `src/entrypoints/popup/` is the toolbar popup and `src/entrypoints/app/` the full pages, on hash routes: All tweaks (`app.html#/`), the Claude Code prompt editor (`#/prompts`, also the options page) and the changelog (`#/changelog`, rendered from `CHANGELOG.md` at build time). They're React components in `src/pages/`, styled with Tailwind and GitHub's Primer colours.
+- The prompt editor saves the Claude Code prompts as `claudePrompts` in `chrome.storage.sync`. The popup's dropdown and the button read the same list.
+- `src/features/claude-code.ts` builds `claude-cli://open?repo=owner/name&q=<prompt>` from the PR's number, title and URL, using your saved prompts, or the built-in ones in `CLAUDE_PROMPTS` (`src/lib/settings.ts`), and hides GitHub's Code button. The Claude logo is from [Simple Icons](https://simpleicons.org) (CC0).
+- `src/features/since-review.ts` links to `/pull/:number/changes/<last reviewed>..<head>` using the commits from that JSON. Its button copies the classes of GitHub's Code button so it matches the header.
+- `src/features/hide-checks-tab.ts` hides the `/checks` link in the PR's tab bar with CSS.
+- `src/features/merge-hint.ts` hides the muted line in the merge box that holds the "View command line instructions" link.
+- `src/features/friday.ts` checks the local day and hour on each page update and adds its row to the merge card (`[data-testid="mergebox-border-container"]`) just before the footer holding the merge button.
+- `src/features/md-review.ts` reads each Markdown file's source diff lines before switching it to rich, then matches each rendered block to its lines by comparing letters and digits only. Commenting drives GitHub's own line selection and "Add comment" button.
+- `src/entrypoints/github.content/hide-copilot.css` hides anything with a Copilot icon, plus the Agents tab.
+- `src/features/repo-files.ts` swaps GitHub's file octicons for icons from `public/icons/`, chosen by `src/lib/file-icons-data.json`. Both are generated from the `material-icon-theme` npm package by `scripts/vendor-icons.mjs` (icons are MIT, see `public/icons/LICENSE`). Thumbnails load from `/raw/`. Folder downloads read GitHub's tree JSON and build an uncompressed ZIP in the page. Quick view highlights with [highlight.js](https://highlightjs.org) (BSD-3-Clause), coloured with GitHub's `--color-prettylights-syntax-*` variables so it follows your theme.
+- `src/features/jump-to-file.ts` loads every path in one request from `/:owner/:repo/tree-list/:commit`, the endpoint GitHub's own file finder uses, after looking up the branch's commit in its tree JSON. Icons and Quick view come from `src/features/repo-files.ts`.
+- `src/features/readme-toc.ts` lists the README's `.markdown-heading` blocks (h1 to h3) in GitHub's sidebar pane, which it lets overflow so the list can stick to the page.
+- `src/features/md-outline.ts` clicks the outline button (`button[class*="TableOfContents"]`) once per file, and saves your own opens and closes, read from its `aria-pressed`, in `localStorage`.
+- The extension icon in `public/icon/` is drawn by `scripts/make-icons.mjs`.

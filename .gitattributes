@@ -1,7 +1,3 @@
-# Left out of the release zip (git archive), since the extension doesn't need them.
-.github/ export-ignore
-scripts/ export-ignore
-.gitattributes export-ignore
-release-please-config.json export-ignore
-.release-please-manifest.json export-ignore
-version.txt export-ignore
+src/lib/file-icons-data.json linguist-generated
+public/icons/** linguist-vendored
+src/vendor/** linguist-vendored
