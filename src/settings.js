@@ -1,5 +1,5 @@
 // Every tweak can be turned off from the toolbar popup. Settings live in
-// chrome.storage.sync and default to on (and the first date format). A tweak can
+// chrome.storage.sync and default to on (and the first option of each dropdown). A tweak can
 // carry a `choice` dropdown or a `toggle` sub-switch, shown under its own switch.
 // Content scripts wait on GH_TWEAKS_SETTINGS before starting, so a change applies
 // on the next page load.
@@ -46,8 +46,17 @@ globalThis.GH_TWEAKS_FILE_CATEGORIES = [
   ['Source', /./],
 ];
 
+// What the Claude Code button asks for. `{n}`, `{title}` and `{url}` are filled in from the PR.
+globalThis.GH_TWEAKS_CLAUDE_PROMPTS = [
+  { key: 'review', label: 'Review the PR', prompt: 'Review PR #{n} ({title}): {url}\nCheck it out with `gh pr checkout {n}`, read the diff against its base branch, and point out bugs, risks and anything unclear.' },
+  { key: 'feedback', label: 'Address review comments', prompt: 'Address the review comments on PR #{n} ({title}): {url}\nCheck it out with `gh pr checkout {n}`, read the unresolved review threads with `gh`, and fix what they ask for.' },
+  { key: 'checkout', label: 'Check out the branch', prompt: 'Check out PR #{n} ({title}) with `gh pr checkout {n}`: {url}' },
+  { key: 'none', label: 'Open the repo, no prompt', prompt: '' },
+];
+
 globalThis.GH_TWEAKS_FEATURES = [
   { group: 'Pull requests', key: 'lightbox', label: 'Image lightbox', description: 'Open PR images in a zoomable gallery.' },
+  { group: 'Pull requests', key: 'claudeCode', label: 'Open in Claude Code', description: 'Swap the Code dropdown for a button that opens the PR in Claude Code.', choice: { key: 'claudePrompt', label: 'Prompt', options: globalThis.GH_TWEAKS_CLAUDE_PROMPTS } },
   { group: 'Pull requests', key: 'reviewButton', label: 'Submit review and LGTM buttons', description: 'Open the review dialog, or approve with LGTM, from the Conversation tab.' },
   { group: 'Pull requests', key: 'mergeBar', label: 'Sticky merge bar', description: 'Checks, reviews and the merge button, always in view.', toggle: { key: 'mergeBarShadow', label: 'Shadow', description: 'Glow that lifts the bar off the page.' } },
   { group: 'Pull requests', key: 'sinceReview', label: 'Changes since your review', description: 'A header button showing only what was pushed since you last reviewed.' },
@@ -67,7 +76,8 @@ globalThis.GH_TWEAKS_FEATURES = [
 
 globalThis.GH_TWEAKS_SETTINGS = chrome.storage.sync.get({
   ...Object.fromEntries(globalThis.GH_TWEAKS_FEATURES.flatMap(({ key, toggle }) => [key, toggle?.key].filter(Boolean).map((k) => [k, true]))),
-  dateFormat: globalThis.GH_TWEAKS_DATE_FORMATS[0].key,
+  // Each dropdown defaults to its first option.
+  ...Object.fromEntries(globalThis.GH_TWEAKS_FEATURES.filter(({ choice }) => choice).map(({ choice }) => [choice.key, choice.options[0].key])),
 });
 
 // hide-copilot.css applies unless this attribute is set.

@@ -37,8 +37,8 @@ globalThis.GH_TWEAKS_PR = (() => {
   }
 
   // A link styled like GitHub's own header buttons, copying the Code button's
-  // classes so it follows GitHub's theme. `icon` is an Octicon's <path> markup.
-  function headerButton({ className, icon, label, title }) {
+  // classes so it follows GitHub's theme. `icon` is SVG <path> markup, 16×16 like the Octicons unless `viewBox` says otherwise.
+  function headerButton({ className, icon, label, title, viewBox = '0 0 16 16' }) {
     const code = headerActions()?.querySelector('button[aria-haspopup]');
     const classOf = (selector) => code?.querySelector(selector)?.className ?? '';
     const link = document.createElement('a');
@@ -47,7 +47,7 @@ globalThis.GH_TWEAKS_PR = (() => {
     link.dataset.variant = 'default';
     link.title = title;
     link.style.textDecoration = 'none';
-    link.innerHTML = `<span class="${classOf('[data-component="buttonContent"]')}" data-component="buttonContent" data-align="center"><span class="${classOf('[data-component="leadingVisual"]')}" data-component="leadingVisual"><svg aria-hidden="true" viewBox="0 0 16 16" width="16" height="16" fill="currentColor" class="octicon">${icon}</svg></span><span class="${classOf('[data-component="text"]')}" data-component="text"></span></span>`;
+    link.innerHTML = `<span class="${classOf('[data-component="buttonContent"]')}" data-component="buttonContent" data-align="center"><span class="${classOf('[data-component="leadingVisual"]')}" data-component="leadingVisual"><svg aria-hidden="true" viewBox="${viewBox}" width="16" height="16" fill="currentColor" class="octicon">${icon}</svg></span><span class="${classOf('[data-component="text"]')}" data-component="text"></span></span>`;
     link.querySelector('[data-component="text"]').textContent = label;
     return link;
   }

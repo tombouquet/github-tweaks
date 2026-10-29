@@ -81,8 +81,8 @@
     return input;
   }
 
-  // A dropdown row under a switch. Each option shows the current time in that
-  // format, so the list doubles as a preview.
+  // A dropdown row under a switch. Options have a `label`, or a `format` that shows
+  // the current time in that date format, so the list doubles as a preview.
   function choiceRow({ key, label, options }, value) {
     const row = document.createElement('label');
     row.className = 'row choice';
@@ -92,7 +92,7 @@
     const select = document.createElement('select');
     const now = new Date();
     for (const option of options) {
-      select.append(new Option(option.format(now), option.key, false, option.key === value));
+      select.append(new Option(option.label ?? option.format(now), option.key, false, option.key === value));
     }
     select.addEventListener('change', () => {
       chrome.storage.sync.set({ [key]: select.value });

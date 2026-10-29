@@ -3,6 +3,7 @@
 Chrome extension with a few fixes for GitHub:
 
 - **Image lightbox:** opens PR images in a zoomable gallery modal, instead of navigating to the raw image in a new tab.
+- **Open in Claude Code:** the Code dropdown in a PR's header becomes a Claude Code button that opens the PR in Claude Code with a prompt ready to send.
 - **Submit review from Conversation:** a floating button on the Conversation tab that jumps to Files changed with the review dialog already open, plus an LGTM button that approves with an "LGTM" comment in one click.
 - **Sticky merge bar:** a bar at the bottom of the Conversation tab shows whether checks passed, reviews and conflicts, with the merge button, so you don't have to scroll to the bottom.
 - **Hide Checks tab:** removes the Checks tab from PRs, since the merge box already shows check results.
@@ -47,6 +48,17 @@ Cmd/Ctrl/Shift/middle-click still opens the image the normal way.
 | Previous / next | Side arrows or thumbnails | `←` / `→` |
 | Open original | Toolbar ↗ button | |
 | Close | ✕ button or click the backdrop | `Esc` |
+
+### Open in Claude Code
+
+On a PR, the Code dropdown at the top right is replaced by a **Claude Code** button. Clicking it opens a [`claude-cli://` deep link](https://code.claude.com/docs/en/deep-links): Claude Code starts in a new terminal, in your local clone of the repo, with a prompt about the PR typed in. Nothing is sent until you press Enter. Pick the prompt from the dropdown under the switch in the popup:
+
+- **Review the PR** (default): check it out with `gh pr checkout` and review the diff.
+- **Address review comments**: check it out and fix what the unresolved review threads ask for.
+- **Check out the branch**: just `gh pr checkout`.
+- **Open the repo, no prompt**.
+
+Claude Code finds your clone from the repo's `owner/name`, so run `claude` in that clone at least once first; otherwise it opens in your home directory. The link only works once Claude Code has registered its `claude-cli://` handler, which happens the first time you send a prompt in an interactive session. Your browser asks before opening it the first time. Turn the switch off to get the Code dropdown back.
 
 ### Submit review
 
@@ -111,6 +123,7 @@ Content scripts run on `github.com`. The only permission is `storage`, for the p
 - `src/absolute-dates.js` switches GitHub's `<relative-time>` elements to absolute mode, then writes the formatted text into each one, re-applying it if GitHub re-renders. The formats live in `src/settings.js` so the popup can preview them, and are built by hand because `Intl` always puts a space before AM/PM.
 - `src/merge-bar.js` reads the section headings of GitHub's merge box (`[data-testid="mergebox-border-container"]`), re-reads them as the page updates, and hides the bar with an `IntersectionObserver` while the merge box is visible.
 - `src/pr-data.js` is shared by the PR header tweaks. It finds the PR in the URL and loads the JSON GitHub's own Files changed page renders from (`/pull/:number/changes` with `Accept: application/json`), cached for a minute: every changed file with its line counts and viewed state, plus the head commit and the commit you last reviewed.
+- `src/claude-code.js` builds `claude-cli://open?repo=owner/name&q=<prompt>` from the PR's number, title and URL, using the prompts in `GH_TWEAKS_CLAUDE_PROMPTS` (`src/settings.js`), and hides GitHub's Code button. The Claude logo is from [Simple Icons](https://simpleicons.org) (CC0).
 - `src/since-review.js` links to `/pull/:number/changes/<last reviewed>..<head>` using the commits from that JSON. Its button copies the classes of GitHub's Code button so it matches the header.
 - `src/review-estimate.js` weighs each file from that JSON by its File triage group, and reads the Viewed toggles on the page for anything you've marked since it loaded.
 - `src/hide-checks-tab.js` hides the `/checks` link in the PR's tab bar with CSS.
