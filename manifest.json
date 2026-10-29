@@ -39,6 +39,7 @@
         "vendor/highlight.min.js",
         "src/repo-files.js",
         "src/merge-bar.js",
+        "src/merge-hint.js",
         "src/friday.js",
         "src/review-estimate.js",
         "src/md-review.js"
