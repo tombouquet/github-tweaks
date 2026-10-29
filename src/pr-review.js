@@ -133,12 +133,23 @@
     );
     if (!approve || approve.disabled) return;
     approve.click();
+    // Gives React a frame to take in the text and the Approve choice.
+    await new Promise((resolve) => setTimeout(resolve, 150));
 
-    const submit = await waitFor(() =>
-      [...dialog.querySelectorAll('button')].find((b) => /^submit review$/i.test(b.textContent.trim()) && !b.disabled),
+    // Submits with Cmd+Enter (Ctrl+Enter elsewhere), the dialog's own shortcut.
+    textarea.focus();
+    const isMac = /Mac/i.test(navigator.platform);
+    textarea.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'Enter', code: 'Enter', keyCode: 13, which: 13, metaKey: isMac, ctrlKey: !isMac, bubbles: true, cancelable: true }),
     );
-    if (!submit) return;
-    submit.click();
+
+    // Falls back to clicking Submit if the shortcut didn't close the dialog.
+    if (!(await waitFor(() => !reviewDialog(), 1500))) {
+      const submit = [...(reviewDialog()?.querySelectorAll('button') ?? [])].find(
+        (b) => /submit/i.test(b.textContent) && !b.disabled,
+      );
+      submit?.click();
+    }
 
     // Celebrate once GitHub closes the dialog, which means the review went through.
     const closed = await waitFor(() => !reviewDialog(), 10000);
