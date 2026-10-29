@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "GitHub Tweaks",
-  "version": "1.9.0",
+  "version": "1.10.0",
   "author": "Tom Bouquet",
   "icons": {
     "16": "images/icon-16.png",
@@ -10,8 +10,16 @@
     "128": "images/icon-128.png"
   },
   "permissions": [
-    "storage"
+    "storage",
+    "notifications"
   ],
+  "background": {
+    "service_worker": "src/background.js"
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
   "action": {
     "default_title": "GitHub Tweaks",
     "default_popup": "popup.html",
@@ -22,7 +30,7 @@
       "128": "images/icon-128.png"
     }
   },
-  "description": "PR image lightbox, a Submit review button and a sticky merge status bar on the Conversation tab, file-type filters with review progress on Files changed, absolute dates everywhere, and file icons, image thumbnails downloads and quick view in repo file lists. Markdown opens as a commentable rich diff, and Copilot buttons are hidden.",
+  "description": "Small fixes and extras for GitHub pull requests and repos.",
   "content_scripts": [
     {
       "matches": [
@@ -31,13 +39,24 @@
       "js": [
         "src/settings.js",
         "src/content.js",
+        "src/pr-data.js",
         "vendor/confetti.min.js",
         "src/pr-review.js",
         "src/absolute-dates.js",
         "src/file-icons-data.js",
         "vendor/highlight.min.js",
         "src/repo-files.js",
+        "src/jump-to-file.js",
+        "src/readme-toc.js",
+        "src/md-outline.js",
+        "src/merge-status.js",
         "src/merge-bar.js",
+        "src/notify-ready.js",
+        "src/merge-hint.js",
+        "src/hide-checks-tab.js",
+        "src/friday.js",
+        "src/since-review.js",
+        "src/claude-code.js",
         "src/md-review.js"
       ],
       "run_at": "document_idle",

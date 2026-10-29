@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>GitHub Tweaks · Claude Code prompts</title>
+<link rel="stylesheet" href="src/page.css">
+<style>
+  .prompt {
+    margin-bottom: 16px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .prompt.default { border-color: var(--accent); }
+  .prompt-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-muted);
+  }
+  .prompt-head input[type="text"] {
+    flex: 1;
+    min-width: 0;
+    padding: 4px 8px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-weight: 600;
+  }
+  .prompt-head input[type="text"]:hover, .prompt-head input[type="text"]:focus { border-color: var(--border); background: var(--bg); outline: none; }
+  .default-label { display: flex; align-items: center; gap: 4px; color: var(--fg-muted); font-size: 12px; white-space: nowrap; cursor: pointer; }
+  .prompt.default .default-label { color: var(--accent); font-weight: 600; }
+  textarea {
+    display: block;
+    width: 100%;
+    min-height: 96px;
+    padding: 12px;
+    border: 0;
+    background: var(--bg);
+    color: inherit;
+    font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+    resize: vertical;
+    outline: none;
+  }
+  .prompt-foot { display: flex; justify-content: flex-end; padding: 4px 12px 8px; color: var(--fg-muted); font-size: 12px; }
+  .prompt-foot.over { color: var(--danger); }
+  .actions { display: flex; align-items: center; gap: 8px; }
+  .status { margin-left: auto; color: var(--fg-muted); font-size: 12px; }
+  .status.error { color: var(--danger); }
+  .status.saved { color: var(--success); }
+</style>
+</head>
+<body>
+<header>
+  <img src="images/icon-48.png" alt="">
+  <h1>Claude Code prompts</h1>
+  <a class="header-link" href="about.html">All tweaks</a>
+</header>
+<p class="intro">
+  The prompts the <strong>Claude Code</strong> button on a PR can type in for you. The default is used when you click the button; pick another under the switch in the toolbar popup.
+  These get filled in from the PR: <code>{n}</code> number, <code>{title}</code> title, <code>{url}</code> link, <code>{repo}</code> owner/name.
+  Leave a prompt empty to just open the repo. Changes save as you type.
+</p>
+<main id="prompts"></main>
+<div class="actions">
+  <button type="button" class="primary" id="add">Add prompt</button>
+  <button type="button" id="reset">Reset to built-in prompts</button>
+  <span class="status" id="status" role="status"></span>
+</div>
+<script src="src/settings.js"></script>
+<script src="src/options.js"></script>
+</body>
+</html>

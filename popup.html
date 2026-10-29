@@ -20,6 +20,7 @@
     --button-hover: #eff2f5;
     --primary: #1f883d;
     --primary-hover: #1c8139;
+    --chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%2359636e'%3E%3Cpath d='M12.78 5.22a.749.749 0 0 1 0 1.06l-4.25 4.25a.749.749 0 0 1-1.06 0L3.22 6.28a.749.749 0 1 1 1.06-1.06L8 8.939l3.72-3.719a.749.749 0 0 1 1.06 0Z'/%3E%3C/svg%3E");
   }
   @media (prefers-color-scheme: dark) {
     :root {
@@ -36,6 +37,7 @@
       --button-hover: #262c36;
       --primary: #238636;
       --primary-hover: #29903b;
+      --chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%239198a1'%3E%3Cpath d='M12.78 5.22a.749.749 0 0 1 0 1.06l-4.25 4.25a.749.749 0 0 1-1.06 0L3.22 6.28a.749.749 0 1 1 1.06-1.06L8 8.939l3.72-3.719a.749.749 0 0 1 1.06 0Z'/%3E%3C/svg%3E");
     }
   }
   * { box-sizing: border-box; }
@@ -47,8 +49,10 @@
     color: var(--fg);
     font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
   }
-  header { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
-  header img { width: 24px; height: 24px; }
+  /* Text sits on the title's baseline, so the smaller version reads as level with it; icons stay centred. */
+  header { display: flex; align-items: baseline; gap: 8px; margin-bottom: 16px; }
+  header img, header .icon-button { width: 24px; height: 24px; align-self: center; }
+  header .icon-button { width: 28px; height: 28px; }
   h1 { margin: 0; font-size: 16px; font-weight: 600; }
   .version { color: var(--fg-muted); font-size: 12px; }
   h2 { margin: 16px 0 8px; font-size: 12px; font-weight: 600; color: var(--fg-muted); }
@@ -60,16 +64,20 @@
   .text { flex: 1; min-width: 0; }
   .label { display: block; font-weight: 600; }
   .description { display: block; color: var(--fg-muted); font-size: 12px; }
-  .row.choice { cursor: default; }
-  .row.choice:hover { background: none; }
+  /* Sub-options (a dropdown or extra switch under a tweak) sit on a tinted background to show they belong to the row above. */
+  .row.choice { cursor: default; background: var(--bg-muted); }
+  .row.choice:hover { background: var(--bg-muted); }
   .row.choice .label { font-weight: 400; }
   .row.choice:has(:disabled) .label { color: var(--fg-muted); }
   select {
     max-width: 200px;
-    padding: 3px 8px;
+    height: 28px;
+    padding: 3px 30px 3px 8px;
     border: 1px solid var(--border);
     border-radius: 6px;
-    background: var(--button-bg);
+    /* Our own chevron (Octicon chevron-down), so it can sit further in from the edge than the browser's. */
+    appearance: none;
+    background: var(--chevron) no-repeat right 10px center / 12px, var(--button-bg);
     color: var(--fg);
     font: inherit;
     font-size: 12px;
@@ -145,6 +153,22 @@
     cursor: pointer;
   }
   button:hover { background: var(--button-hover); }
+  /* A square icon button, the same 28px height as the dropdown beside it. */
+  .icon-button {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    margin-left: -8px;
+    padding: 0;
+    color: var(--fg-muted);
+  }
+  .icon-button:hover { color: var(--fg); }
+  .icon-button.about { margin-left: auto; }
+  .icon-button:disabled { opacity: 0.5; cursor: not-allowed; }
+  .row.choice:has(.icon-button) select { max-width: 172px; }
 </style>
 </head>
 <body>
@@ -152,6 +176,8 @@
   <img src="images/icon-48.png" alt="">
   <h1>GitHub Tweaks</h1>
   <span class="version" id="version"></span>
+  <!-- Octicon book (MIT). -->
+  <button type="button" class="icon-button about" id="about" title="All tweaks" aria-label="All tweaks"><svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M0 1.75A.75.75 0 0 1 .75 1h4.253c1.227 0 2.317.59 3 1.501A3.743 3.743 0 0 1 11.006 1h4.245a.75.75 0 0 1 .75.75v10.5a.75.75 0 0 1-.75.75h-4.507a2.25 2.25 0 0 0-1.591.659l-.622.621a.75.75 0 0 1-1.06 0l-.622-.621A2.25 2.25 0 0 0 5.258 13H.75a.75.75 0 0 1-.75-.75Zm7.251 10.324.004-5.073-.002-2.253A2.25 2.25 0 0 0 5.003 2.5H1.5v9h3.757a3.75 3.75 0 0 1 1.994.574ZM8.755 4.75l-.004 7.322a3.752 3.752 0 0 1 1.992-.572H14.5v-9h-3.495a2.25 2.25 0 0 0-2.25 2.25Z"/></svg></button>
 </header>
 <main id="features"></main>
 <div class="flash" id="flash" role="status" hidden>

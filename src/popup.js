@@ -6,6 +6,10 @@
   const flash = document.getElementById('flash');
 
   document.getElementById('version').textContent = `v${chrome.runtime.getManifest().version}`;
+  document.getElementById('about').addEventListener('click', () => {
+    chrome.tabs.create({ url: chrome.runtime.getURL('about.html') });
+    window.close();
+  });
   document.getElementById('reload').addEventListener('click', async () => {
     await chrome.tabs.reload();
     window.close();
@@ -26,7 +30,7 @@
       const toggle = row(feature, settings[feature.key]);
       box.append(toggle);
       const sub = feature.choice
-        ? choiceRow(feature.choice, settings[feature.choice.key])
+        ? choiceRow(feature.choice, settings[feature.choice.key], settings[feature.choice.optionsKey])
         : feature.toggle && subSwitchRow(feature.toggle, settings[feature.toggle.key]);
       if (sub) {
         box.append(sub.parentElement);
@@ -81,9 +85,10 @@
     return input;
   }
 
-  // A dropdown row under a switch. Each option shows the current time in that
-  // format, so the list doubles as a preview.
-  function choiceRow({ key, label, options }, value) {
+  // A dropdown row under a switch. Options have a `label`, or a `format` that shows
+  // the current time in that date format, so the list doubles as a preview.
+  function choiceRow({ key, label, options: builtIn, editLabel }, value, saved) {
+    const options = saved?.length ? saved : builtIn;
     const row = document.createElement('label');
     row.className = 'row choice';
     const text = document.createElement('span');
@@ -92,13 +97,27 @@
     const select = document.createElement('select');
     const now = new Date();
     for (const option of options) {
-      select.append(new Option(option.format(now), option.key, false, option.key === value));
+      select.append(new Option(option.label ?? option.format(now), option.key, false, option.key === value));
     }
     select.addEventListener('change', () => {
       chrome.storage.sync.set({ [key]: select.value });
       flash.hidden = false;
     });
     row.append(text, select);
+    // Editable lists get a cog beside the dropdown that opens the options page, where there's room to edit them.
+    if (editLabel) {
+      const edit = document.createElement('button');
+      edit.type = 'button';
+      edit.className = 'icon-button';
+      edit.title = editLabel;
+      edit.setAttribute('aria-label', editLabel);
+      edit.innerHTML = GH_TWEAKS_GEAR_ICON;
+      edit.addEventListener('click', (event) => {
+        event.preventDefault();
+        chrome.runtime.openOptionsPage();
+      });
+      row.append(edit);
+    }
     return select;
   }
 })();
