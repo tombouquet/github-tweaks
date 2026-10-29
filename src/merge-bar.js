@@ -203,6 +203,13 @@
   function injectStyles() {
     const style = document.createElement('style');
     style.textContent = `
+      /* Shadow follows GitHub's theme: black in dark mode, white in light mode.
+         GitHub's "auto" mode follows the system setting. */
+      :root { --gh-tweaks-merge-shadow: 0 0 0; }
+      html[data-color-mode="light"] { --gh-tweaks-merge-shadow: 255 255 255; }
+      @media (prefers-color-scheme: light) {
+        html[data-color-mode="auto"] { --gh-tweaks-merge-shadow: 255 255 255; }
+      }
       .gh-tweaks-merge-bar {
         position: fixed;
         bottom: 16px;
@@ -220,10 +227,10 @@
         backdrop-filter: blur(12px) saturate(1.4);
         box-shadow:
           0 1px 0 rgba(255, 255, 255, 0.06) inset,
-          0 0 0 1px rgba(0, 0, 0, 0.5),
-          0 6px 16px rgba(0, 0, 0, 0.65),
-          0 20px 56px 12px rgba(0, 0, 0, 0.8),
-          0 0 100px 32px rgba(0, 0, 0, 0.55);
+          0 0 0 1px rgb(var(--gh-tweaks-merge-shadow) / 0.5),
+          0 6px 16px rgb(var(--gh-tweaks-merge-shadow) / 0.65),
+          0 20px 56px 12px rgb(var(--gh-tweaks-merge-shadow) / 0.8),
+          0 0 100px 32px rgb(var(--gh-tweaks-merge-shadow) / 0.55);
         color: var(--fgColor-default, #1f2328);
         font: 14px var(--fontStack-sansSerif, -apple-system, sans-serif);
         cursor: pointer;
@@ -289,9 +296,9 @@
         cursor: inherit;
       }
       @media (max-width: 767px) { .gh-tweaks-merge-chips { display: none; } }
-      /* Keep the Submit review button clear of the bar once the sidebar stacks below the timeline. */
+      /* Keep the Submit review and LGTM buttons clear of the bar once the sidebar stacks below the timeline. */
       @media (max-width: 1011px) {
-        html:has(.gh-tweaks-merge-bar:not(.gh-tweaks-merge-hidden)) .gh-tweaks-review-button { bottom: 88px; }
+        html:has(.gh-tweaks-merge-bar:not(.gh-tweaks-merge-hidden)) .gh-tweaks-review-actions { bottom: 88px; }
       }
     `;
     document.documentElement.append(style);
