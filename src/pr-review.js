@@ -60,14 +60,36 @@
     }
   }
 
+  function currentUser() {
+    return document.querySelector('meta[name="user-login"]')?.content || '';
+  }
+
   function isSignedIn() {
-    return Boolean(document.querySelector('meta[name="user-login"]')?.content);
+    return Boolean(currentUser());
+  }
+
+  // Reads the PR author from the header line ("<author> wants to merge N commits…" or "<author>
+  // merged N commits…"). Returns '' until the header renders or if GitHub changes its markup.
+  function prAuthor() {
+    const classic = document.querySelector('.gh-header-meta .author');
+    if (classic) return classic.textContent.trim();
+    const links = document.querySelectorAll('a[data-hovercard-url^="/users/"], a.author');
+    for (const link of links) {
+      let block = link.parentElement;
+      for (let depth = 0; block && depth < 3; depth++, block = block.parentElement) {
+        if (/\b(wants to merge|merged) \d+ commits?\b/.test(block.textContent)) {
+          return link.dataset.hovercardUrl?.match(/^\/users\/([^/]+)/)?.[1] ?? link.textContent.trim();
+        }
+      }
+    }
+    return '';
   }
 
   // --- Review button on the Conversation tab --------------------------------
 
   const LGTM = 'lgtm';
   let reviewActions = null;
+  let lgtmButton = null;
 
   function updateReviewButton(show) {
     if (!show) {
@@ -78,7 +100,7 @@
       reviewActions = document.createElement('div');
       reviewActions.className = 'gh-tweaks-review-actions';
       // Octicon check (MIT).
-      const lgtm = createReviewButton(
+      lgtmButton = createReviewButton(
         'gh-tweaks-review-button gh-tweaks-lgtm-button',
         '<svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"/></svg><span>LGTM</span>',
         'Approve this PR with an "LGTM" comment',
@@ -91,8 +113,11 @@
         'Open the review dialog on the Files changed tab',
         '1',
       );
-      reviewActions.append(lgtm, review);
+      reviewActions.append(lgtmButton, review);
     }
+    // GitHub won't let you approve your own PR, so LGTM is hidden there.
+    const author = prAuthor();
+    lgtmButton.hidden = Boolean(author) && author.toLowerCase() === currentUser().toLowerCase();
     // Attached to <html> so swapping <body> during navigation doesn't drop it.
     if (!reviewActions.isConnected) document.documentElement.append(reviewActions);
   }
@@ -431,6 +456,7 @@
         transition: background-color 80ms, transform 80ms;
         animation: gh-tweaks-rise-in 280ms cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
       }
+      .gh-tweaks-review-button[hidden] { display: none; }
       .gh-tweaks-review-button:hover { background: var(--button-primary-bgColor-hover, #1c8139); }
       .gh-tweaks-review-button:active { transform: translateY(1px); }
       .gh-tweaks-review-button:focus-visible { outline: 2px solid var(--focus-outlineColor, #0969da); outline-offset: 2px; }

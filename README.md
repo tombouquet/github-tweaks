@@ -45,7 +45,7 @@ Cmd/Ctrl/Shift/middle-click still opens the image the normal way.
 
 ### Submit review
 
-When you're signed in, a **Submit review** button floats at the bottom right of a PR's Conversation tab. Clicking it opens Files changed with GitHub's review dialog already open. Next to it, **LGTM** does the same, then fills in "LGTM", picks Approve and submits the review, then throws confetti when GitHub brings you back to the Conversation tab ([confetti.js](https://confettijs.org/)). If Approve isn't available, such as on your own PR, it stops with the dialog open.
+When you're signed in, a **Submit review** button floats at the bottom right of a PR's Conversation tab. Clicking it opens Files changed with GitHub's review dialog already open. Next to it, **LGTM** does the same, then fills in "LGTM", picks Approve and submits the review, then throws confetti when GitHub brings you back to the Conversation tab ([confetti.js](https://confettijs.org/)). LGTM is hidden on your own PRs, since GitHub doesn't let you approve them. If Approve still isn't available, it stops with the dialog open.
 
 ### Sticky merge bar
 
