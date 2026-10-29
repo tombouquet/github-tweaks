@@ -10,15 +10,7 @@
   const HIDDEN_KEY = 'gh-tweaks-hidden-categories';
   const HIDDEN_ATTR = 'data-gh-tweaks-hidden';
 
-  // First match wins, so the specific buckets come before the catch-all ones.
-  const CATEGORIES = [
-    ['Lockfiles', /(^|\/)(package-lock\.json|npm-shrinkwrap\.json|yarn\.lock|pnpm-lock\.yaml|bun\.lockb?|Cargo\.lock|Gemfile\.lock|poetry\.lock|uv\.lock|Pipfile\.lock|composer\.lock|go\.sum|flake\.lock|Podfile\.lock|packages\.lock\.json)$/],
-    ['Generated', /(^|\/)(dist|build|out|vendor|node_modules|__generated__|generated|__snapshots__)\/|\.min\.(js|css)$|\.(map|snap)$|\.pb\.go$|_pb2\.pyi?$|\.g\.dart$|\.designer\.cs$/],
-    ['Tests', /(^|\/)(tests?|__tests__|__mocks__|spec|specs|e2e|fixtures)\/|[._-](test|spec)\.[^/]+$|_test\.go$|(^|\/)test_[^/]+\.py$/],
-    ['Docs', /\.(md|mdx|rst|adoc|txt)$|(^|\/)docs?\//i],
-    ['Config', /(^|\/)\.[^/]+|\.(json|jsonc|ya?ml|toml|ini|cfg|conf|properties|xml|lock)$|(^|\/)(Dockerfile|Makefile)$/],
-    ['Source', /./],
-  ];
+  const CATEGORIES = GH_TWEAKS_FILE_CATEGORIES;
 
   let hidden = loadHidden();
   let toolbar = null;

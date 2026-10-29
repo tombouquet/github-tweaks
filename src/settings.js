@@ -35,10 +35,22 @@ globalThis.GH_TWEAKS_DATE_FORMATS = (() => {
   ];
 })();
 
+// File groups for File triage and the review time estimate, by path.
+// First match wins, so the specific buckets come before the catch-all ones.
+globalThis.GH_TWEAKS_FILE_CATEGORIES = [
+  ['Lockfiles', /(^|\/)(package-lock\.json|npm-shrinkwrap\.json|yarn\.lock|pnpm-lock\.yaml|bun\.lockb?|Cargo\.lock|Gemfile\.lock|poetry\.lock|uv\.lock|Pipfile\.lock|composer\.lock|go\.sum|flake\.lock|Podfile\.lock|packages\.lock\.json)$/],
+  ['Generated', /(^|\/)(dist|build|out|vendor|node_modules|__generated__|generated|__snapshots__)\/|\.min\.(js|css)$|\.(map|snap)$|\.pb\.go$|_pb2\.pyi?$|\.g\.dart$|\.designer\.cs$/],
+  ['Tests', /(^|\/)(tests?|__tests__|__mocks__|spec|specs|e2e|fixtures)\/|[._-](test|spec)\.[^/]+$|_test\.go$|(^|\/)test_[^/]+\.py$/],
+  ['Docs', /\.(md|mdx|rst|adoc|txt)$|(^|\/)docs?\//i],
+  ['Config', /(^|\/)\.[^/]+|\.(json|jsonc|ya?ml|toml|ini|cfg|conf|properties|xml|lock)$|(^|\/)(Dockerfile|Makefile)$/],
+  ['Source', /./],
+];
+
 globalThis.GH_TWEAKS_FEATURES = [
   { group: 'Pull requests', key: 'lightbox', label: 'Image lightbox', description: 'Open PR images in a zoomable gallery.' },
   { group: 'Pull requests', key: 'reviewButton', label: 'Submit review and LGTM buttons', description: 'Open the review dialog, or approve with LGTM, from the Conversation tab.' },
   { group: 'Pull requests', key: 'mergeBar', label: 'Sticky merge bar', description: 'Checks, reviews and the merge button, always in view.', toggle: { key: 'mergeBarShadow', label: 'Shadow', description: 'Glow that lifts the bar off the page.' } },
+  { group: 'Pull requests', key: 'reviewEstimate', label: 'Review time estimate', description: 'How long a PR takes to review, counting down as you go.' },
   { group: 'Pull requests', key: 'fileTriage', label: 'File triage', description: 'Filter chips and review progress on Files changed.' },
   { group: 'Pull requests', key: 'fridayWarning', label: 'Friday merge warning', description: 'A worried banner above the merge box on Fridays.' },
   { group: 'Pull requests', key: 'markdownReview', label: 'Rich Markdown review', description: 'Comment on rendered Markdown blocks.' },

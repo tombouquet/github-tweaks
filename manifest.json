@@ -31,6 +31,7 @@
       "js": [
         "src/settings.js",
         "src/content.js",
+        "src/pr-data.js",
         "vendor/confetti.min.js",
         "src/pr-review.js",
         "src/absolute-dates.js",
@@ -39,6 +40,7 @@
         "src/repo-files.js",
         "src/merge-bar.js",
         "src/friday.js",
+        "src/review-estimate.js",
         "src/md-review.js"
       ],
       "run_at": "document_idle",
