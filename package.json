@@ -2,7 +2,7 @@
   "name": "github-tweaks",
   "description": "Small fixes and extras for GitHub pull requests and repos.",
   "private": true,
-  "version": "1.11.0",
+  "version": "1.11.1",
   "type": "module",
   "scripts": {
     "dev": "wxt",
