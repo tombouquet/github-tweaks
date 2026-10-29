@@ -26,7 +26,7 @@
 
   GH_TWEAKS_SETTINGS.then((settings) => {
     if (!settings.mergeBar) return;
-    injectStyles();
+    injectStyles(settings.mergeBarShadow);
     new MutationObserver(schedule).observe(document.documentElement, { childList: true, subtree: true, characterData: true });
     addEventListener('resize', place);
     schedule();
@@ -200,7 +200,7 @@
     bar.style.width = `${width}px`;
   }
 
-  function injectStyles() {
+  function injectStyles(shadow) {
     const style = document.createElement('style');
     style.textContent = `
       /* Shadow follows GitHub's theme: black in dark mode, white in light mode.
