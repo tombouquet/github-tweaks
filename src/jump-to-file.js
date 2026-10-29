@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  // Cmd/Ctrl+P anywhere in a repo (code, PRs, issues, Actions…) opens a fuzzy
+  // Cmd/Ctrl+K anywhere in a repo (code, PRs, issues, Actions…) opens a fuzzy
   // file finder over every file on the current branch, or the default branch
   // outside the code pages. Enter opens the file, Cmd/Ctrl+Enter opens it in a new
   // tab, and Shift+Enter previews it in Quick view.
@@ -25,7 +25,7 @@
   GH_TWEAKS_SETTINGS.then((settings) => {
     if (!settings.jumpToFile) return;
     injectStyles();
-    // Capture phase, so it runs before GitHub's own shortcuts and the browser's Print.
+    // Capture phase, so it runs before GitHub's own Cmd/Ctrl+K command palette.
     document.addEventListener('keydown', onShortcut, true);
   });
 
@@ -36,12 +36,12 @@
   }
 
   function onShortcut(event) {
-    if (event.key.toLowerCase() !== 'p' || !(event.metaKey || event.ctrlKey) || event.shiftKey || event.altKey) return;
-    // While open, Ctrl+P moves up the list (like Ctrl+N moves down) and Cmd+P does nothing.
+    if (event.key.toLowerCase() !== 'k' || !(event.metaKey || event.ctrlKey) || event.shiftKey || event.altKey) return;
+    // Pressing it again closes the finder.
     if (dialog?.open) {
       event.preventDefault();
       event.stopPropagation();
-      if (event.ctrlKey && !event.metaKey) move(-1);
+      dialog.close();
       return;
     }
     const repo = currentRepo();
@@ -240,7 +240,7 @@
     input.addEventListener('input', search);
     input.addEventListener('keydown', (event) => {
       if (event.key === 'ArrowDown' || (event.ctrlKey && event.key === 'n')) move(1);
-      else if (event.key === 'ArrowUp') move(-1);
+      else if (event.key === 'ArrowUp' || (event.ctrlKey && event.key === 'p')) move(-1);
       else if (event.key === 'Enter') choose(selected, { newTab: event.metaKey || event.ctrlKey, preview: event.shiftKey });
       else return;
       event.preventDefault();

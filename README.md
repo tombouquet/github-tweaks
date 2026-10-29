@@ -16,7 +16,7 @@ Chrome extension with a few fixes for GitHub:
 - **Rich Markdown review:** Markdown files on Files changed open as rich diffs, and you can select rendered paragraphs, list items or table rows to comment on their source lines.
 - **No Copilot:** Copilot buttons (header chat, Copilot panel, "Ask about this diff") and the Agents tab are hidden.
 - **Absolute dates:** every timestamp on github.com shows the real time and date, such as `4:29PM Oct 16, 2026`, instead of "last week".
-- **Jump to file:** press Cmd/Ctrl+P anywhere in a repo to fuzzy-find any file and open it or preview it in Quick view.
+- **Jump to file:** press Cmd/Ctrl+K anywhere in a repo to fuzzy-find any file and open it or preview it in Quick view.
 - **README contents:** a sticky outline of the README in a repo's sidebar that follows along as you read.
 - **File icons:** VS Code-style icons ([Material Icon Theme](https://github.com/material-extensions/vscode-material-icon-theme)) in repo file lists, the file tree and the PR file tree.
 - **Image thumbnails:** image files in a file list show a small preview in place of their icon. Hover it to enlarge.
@@ -121,7 +121,7 @@ Timestamps on every GitHub page (repo home, file lists, commits, PRs, issues, Ac
 
 ### Jump to file
 
-Press **Cmd+P** (Ctrl+P on Windows and Linux) anywhere in a repo: its code, a PR, an issue, Actions. A finder opens over the page with every file in the repo. Type part of a name or path; letters don't need to be next to each other, so `chkguard` finds `checkout.guard.ts`. Matches in the file name rank above matches in folders.
+Press **Cmd+K** (Ctrl+K on Windows and Linux) anywhere in a repo: its code, a PR, an issue, Actions. A finder opens over the page with every file in the repo. Type part of a name or path; letters don't need to be next to each other, so `chkguard` finds `checkout.guard.ts`. Matches in the file name rank above matches in folders.
 
 | Action | Keyboard |
 | --- | --- |
@@ -129,9 +129,9 @@ Press **Cmd+P** (Ctrl+P on Windows and Linux) anywhere in a repo: its code, a PR
 | Open the file | `Enter` or click |
 | Open in a new tab | `Cmd/Ctrl+Enter` or Cmd/Ctrl-click |
 | Preview in Quick view | `Shift+Enter` or Shift-click (needs Quick view on) |
-| Close | `Esc` or click outside |
+| Close | `Esc`, `Cmd/Ctrl+K` again or click outside |
 
-On code pages it searches the branch or tag you're looking at; everywhere else, the default branch. It takes over Cmd/Ctrl+P on GitHub, so use the browser menu to print a GitHub page.
+On code pages it searches the branch or tag you're looking at; everywhere else, the default branch. Inside a repo it takes over Cmd/Ctrl+K, which otherwise opens GitHub's command palette; outside repos, GitHub's palette still opens.
 
 ### README contents
 
