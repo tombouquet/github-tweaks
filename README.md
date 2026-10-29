@@ -5,7 +5,7 @@ Chrome extension with a few fixes for GitHub:
 - **Image lightbox:** opens PR images in a zoomable gallery modal, instead of navigating to the raw image in a new tab.
 - **Submit review from Conversation:** a floating button on the Conversation tab that jumps to Files changed with the review dialog already open, plus an LGTM button that approves with an "LGTM" comment in one click.
 - **Sticky merge bar:** a bar at the bottom of the Conversation tab shows whether checks passed, reviews and conflicts, with the merge button, so you don't have to scroll to the bottom.
-- **Friday merge warning:** on Fridays, a banner above the merge box asks if you're sure, more nervously as the day goes on.
+- **Friday merge warning:** on Fridays, a banner above the merge box asks if you're sure, with a random message that gets more nervous as the day goes on.
 - **File triage:** filter chips above the file tree that hide lockfiles, generated files, tests, docs, config or source, with a review progress bar that counts only the files still shown.
 - **Rich Markdown review:** Markdown files on Files changed open as rich diffs, and you can select rendered paragraphs, list items or table rows to comment on their source lines.
 - **No Copilot:** Copilot buttons (header chat, Copilot panel, "Ask about this diff") and the Agents tab are hidden.
@@ -58,7 +58,7 @@ The bar casts a large shadow so it stands out from the timeline. Turn off **Shad
 
 ### Friday merge warning
 
-All day Friday (your local time), a banner sits above the merge box on a PR's Conversation tab. It starts gentle in the morning and gets more alarmed in the afternoon, after 3pm and into the evening. The sticky merge bar's button reads "Squash and merge on a Friday?" too. Nothing is blocked; it's only a nudge.
+All day Friday (your local time), a banner sits above the merge box on a PR's Conversation tab. It starts gentle in the morning and gets more alarmed in the afternoon, after 3pm and into the evening, with a different message picked at random each time the page loads. The sticky merge bar's button reads "Squash and merge on a Friday?" too. Nothing is blocked; it's only a nudge.
 
 ### File triage
 

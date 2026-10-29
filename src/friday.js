@@ -6,13 +6,44 @@
   // reads "… on a Friday?" too.
   const CONVERSATION_PATH = /^\/[^/]+\/[^/]+\/pull\/\d+\/?$/;
   const FRIDAY_ATTR = 'data-gh-tweaks-friday';
-  // [from hour, emoji, headline, detail]. The last one whose hour has passed wins.
+  // Messages by time of day: the last group whose hour has passed applies. Each
+  // page load picks one at random from that group. [emoji, headline, detail].
   const MOODS = [
-    [0, '🍻', "It's Friday.", 'Merge now and you have the rest of the day to fix it. Probably.'],
-    [12, '😬', "It's Friday afternoon.", 'Sure this can’t wait until Monday?'],
-    [15, '🚨', "It's late on a Friday.", 'Your weekend called. It would like a word before you merge.'],
-    [18, '🔥', "It's Friday night.", 'Nobody is around to roll this back. Go home.'],
+    [0, [
+      ['🍻', "It's Friday.", 'Merge now and you have the rest of the day to fix it. Probably.'],
+      ['🌤️', 'Happy Friday!', 'A fine day to merge. Said nobody on call, ever.'],
+      ['🧘', "It's Friday.", 'Breathe in. Read the diff once more. Breathe out.'],
+      ['☕', 'Friday morning merge?', 'Bold, but there are hours left to undo it.'],
+      ['🎲', "It's Friday.", 'Feeling lucky? The pager is.'],
+      ['📅', "It's Friday.", 'Monday-you would appreciate a heads-up.'],
+    ]],
+    [12, [
+      ['😬', "It's Friday afternoon.", 'Sure this can’t wait until Monday?'],
+      ['🥪', 'Friday lunch merge?', 'Eat first. Merge after. Or Monday.'],
+      ['🫠', "It's Friday afternoon.", 'Half the team has mentally left the building.'],
+      ['🧯', "It's Friday afternoon.", 'Know where the rollback button is? Just checking.'],
+      ['📉', 'Friday afternoon.', 'Statistically the best time to find out what breaks.'],
+      ['🙏', "It's Friday afternoon.", 'Have you thought about Monday instead? Monday is nice.'],
+    ]],
+    [15, [
+      ['🚨', "It's late on a Friday.", 'Your weekend called. It would like a word before you merge.'],
+      ['🫣', 'After 3pm on a Friday?', 'Brave. Very brave.'],
+      ['📟', "It's late on a Friday.", 'Somewhere, a pager just shivered.'],
+      ['🏖️', "It's late on a Friday.", 'Your weekend plans are in this merge button’s hands.'],
+      ['🧨', 'Late Friday merge.', 'What could possibly go wrong? (Everything.)'],
+      ['⏳', "It's late on a Friday.", 'This will still be here on Monday. So will you, hopefully.'],
+    ]],
+    [18, [
+      ['🔥', "It's Friday night.", 'Nobody is around to roll this back. Go home.'],
+      ['🌙', "It's Friday night.", 'The office is empty. The pager is not.'],
+      ['👻', 'Friday night merge?', 'Spooky. The on-call engineer thinks so too.'],
+      ['🍕', "It's Friday night.", 'Close the laptop. Order a pizza. Merge on Monday.'],
+      ['🦉', "It's Friday night.", 'Only owls and incidents are up this late.'],
+      ['🛑', "It's Friday night.", 'Step away from the merge button.'],
+    ]],
   ];
+  // One pick per group for this page load, so the message stays put while you're on the page.
+  const PICKS = MOODS.map(([, messages]) => Math.floor(Math.random() * messages.length));
 
   let banner = null;
   let scheduled = false;
@@ -43,7 +74,8 @@
       banner?.remove();
       return;
     }
-    const [, emoji, headline, detail] = MOODS.findLast(([hour]) => now.getHours() >= hour);
+    const mood = MOODS.findLastIndex(([hour]) => now.getHours() >= hour);
+    const [emoji, headline, detail] = MOODS[mood][1][PICKS[mood]];
     banner ??= createBanner();
     banner.querySelector('.gh-tweaks-friday-emoji').textContent = emoji;
     banner.querySelector('strong').textContent = headline;
