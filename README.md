@@ -25,11 +25,28 @@ Chrome extension with a few fixes for GitHub:
 
 ## Install
 
-1. Open `chrome://extensions`.
-2. Turn on **Developer mode** (top right).
-3. Click **Load unpacked** and pick this folder.
+1. Clone the repo (`git clone https://github.com/tombouquet/github-tweaks.git`), or download and unzip `github-tweaks-vX.Y.Z.zip` from the [latest release](https://github.com/tombouquet/github-tweaks/releases/latest). A clone is easier to update.
+2. Open `chrome://extensions`.
+3. Turn on **Developer mode** (top right).
+4. Click **Load unpacked** and pick the folder.
 
-Reload any open GitHub tabs afterwards.
+Reload any open GitHub tabs afterwards. The changelog opens in a new tab.
+
+## Updating
+
+Chrome doesn't update unpacked extensions on its own, so the extension checks the latest GitHub release every hour and when you open the popup. When a newer version is out you get a `↑` badge on the toolbar icon, one desktop notification, and a banner in the popup. To update:
+
+1. Run `git pull` in your clone (or download the new zip and unzip it over the old folder).
+2. Click **Reload extension** in the popup's banner, or the reload button on `chrome://extensions`.
+
+The changelog opens after every version change. You can also open it from the version number in the popup or on the All tweaks page.
+
+## Releasing
+
+Releases are cut by [Release Please](https://github.com/googleapis/release-please) from [Conventional Commits](https://www.conventionalcommits.org/) on `main`. Don't bump the version by hand.
+
+1. Merge `feat:` / `fix:` PRs into `main`. Release Please keeps a "chore(main): release x.y.z" PR open that bumps `manifest.json` and adds the new `CHANGELOG.md` section. `feat` bumps the minor version and `fix` the patch.
+2. Merge that PR when you want to ship. It tags `vX.Y.Z`, creates the GitHub release with the changelog as its notes, and attaches a zip of the extension. Installed copies see the update at their next check.
 
 ## Usage
 
