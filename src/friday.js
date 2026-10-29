@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  // On Fridays, a banner in a PR's merge card, just above the merge button, asks whether you really want to
+  // On Fridays, a row in a PR's merge card, just above the merge button, asks whether you really want to
   // merge, getting more worried as the day goes on. The sticky merge bar's button
   // reads "… on a Friday?" too.
   const CONVERSATION_PATH = /^\/[^/]+\/[^/]+\/pull\/\d+\/?$/;
@@ -68,8 +68,8 @@
     const now = new Date();
     const friday = now.getDay() === 5;
     document.documentElement.toggleAttribute(FRIDAY_ATTR, friday);
-    const footer = friday && CONVERSATION_PATH.test(location.pathname) && mergeFooter();
-    if (!footer) {
+    const card = friday && CONVERSATION_PATH.test(location.pathname) && document.querySelector('[data-testid="mergebox-border-container"]');
+    if (!card) {
       banner?.remove();
       return;
     }
@@ -79,23 +79,28 @@
     banner.querySelector('.gh-tweaks-friday-emoji').textContent = emoji;
     banner.querySelector('strong').textContent = headline;
     banner.querySelector('.gh-tweaks-friday-detail').textContent = detail;
-    if (footer.firstElementChild !== banner) footer.prepend(banner);
+    // Sits as the card's last row, right above the footer with the merge button. With
+    // no merge button, such as on a PR with conflicts, it goes at the bottom of the card.
+    const footer = mergeFooter(card);
+    if (footer ? banner.nextElementSibling !== footer : card.lastElementChild !== banner) {
+      if (footer) footer.before(banner);
+      else card.append(banner);
+    }
   }
 
-  // The merge card's footer, which holds the merge button. Falls back to the card's
-  // last section when GitHub shows no merge button, such as on a PR with conflicts.
-  function mergeFooter() {
-    const card = document.querySelector('[data-testid="mergebox-border-container"]');
-    if (!card) return null;
+  function mergeFooter(card) {
     const button = [...card.querySelectorAll('button')].find((b) => /merge/i.test(b.textContent) && !/^rebase|command line/i.test(b.textContent.trim()));
-    return [...card.children].find((section) => section.contains(button)) ?? card.lastElementChild;
+    return [...card.children].find((section) => section !== banner && section.contains(button)) ?? null;
   }
 
+  // Built like the card's own rows (icon, heading, detail). The heading isn't an h3,
+  // so the sticky merge bar doesn't read it as a merge status.
   function createBanner() {
-    const element = document.createElement('div');
+    const element = document.createElement('section');
     element.className = 'gh-tweaks-friday';
-    element.setAttribute('role', 'note');
-    element.innerHTML = '<span class="gh-tweaks-friday-emoji" aria-hidden="true"></span><span><strong></strong> <span class="gh-tweaks-friday-detail"></span></span>';
+    element.setAttribute('aria-label', 'Friday warning');
+    element.innerHTML =
+      '<span class="gh-tweaks-friday-icon" aria-hidden="true"><span class="gh-tweaks-friday-emoji"></span></span><div><strong></strong><p class="gh-tweaks-friday-detail"></p></div>';
     return element;
   }
 
@@ -104,22 +109,27 @@
     style.textContent = `
       .gh-tweaks-friday {
         display: flex;
+        gap: 8px;
+        padding: 16px;
+        border-bottom: 1px solid var(--borderColor-muted, #d1d9e0b3);
+      }
+      .gh-tweaks-friday-icon {
+        display: flex;
+        flex-shrink: 0;
         align-items: center;
-        gap: 12px;
-        margin: 0 0 12px;
-        padding: 10px 12px;
-        border: 1px solid var(--borderColor-attention-muted, #d4a72c66);
-        border-radius: 6px;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
         background: var(--bgColor-attention-muted, #fff8c5);
-        color: var(--fgColor-default, #1f2328);
-        font-size: 14px;
       }
       .gh-tweaks-friday-emoji {
-        font-size: 24px;
+        font-size: 18px;
         line-height: 1;
         animation: gh-tweaks-friday-wobble 2.4s ease-in-out infinite;
       }
-      .gh-tweaks-friday-detail { color: var(--fgColor-muted, #59636e); }
+      .gh-tweaks-friday strong { display: block; font-size: 16px; font-weight: 600; line-height: 24px; }
+      .gh-tweaks-friday-detail { margin: 0; color: var(--fgColor-muted, #59636e); font-size: 14px; line-height: 21px; }
       @keyframes gh-tweaks-friday-wobble {
         0%, 80%, 100% { transform: rotate(0); }
         85% { transform: rotate(-12deg); }

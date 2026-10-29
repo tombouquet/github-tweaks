@@ -5,7 +5,7 @@ Chrome extension with a few fixes for GitHub:
 - **Image lightbox:** opens PR images in a zoomable gallery modal, instead of navigating to the raw image in a new tab.
 - **Submit review from Conversation:** a floating button on the Conversation tab that jumps to Files changed with the review dialog already open, plus an LGTM button that approves with an "LGTM" comment in one click.
 - **Sticky merge bar:** a bar at the bottom of the Conversation tab shows whether checks passed, reviews and conflicts, with the merge button, so you don't have to scroll to the bottom.
-- **Friday merge warning:** on Fridays, a banner above the merge button asks if you're sure, with a random message that gets more nervous as the day goes on.
+- **Friday merge warning:** on Fridays, an extra row in the merge card asks if you're sure, with a random message that gets more nervous as the day goes on.
 - **File triage:** filter chips above the file tree that hide lockfiles, generated files, tests, docs, config or source, with a review progress bar that counts only the files still shown.
 - **Rich Markdown review:** Markdown files on Files changed open as rich diffs, and you can select rendered paragraphs, list items or table rows to comment on their source lines.
 - **No Copilot:** Copilot buttons (header chat, Copilot panel, "Ask about this diff") and the Agents tab are hidden.
@@ -58,7 +58,7 @@ The bar casts a large shadow so it stands out from the timeline. Turn off **Shad
 
 ### Friday merge warning
 
-All day Friday (your local time), a banner sits in the merge card on a PR's Conversation tab, just above the merge button. It starts gentle in the morning and gets more alarmed in the afternoon, after 3pm and into the evening, with a different message picked at random each time the page loads. The sticky merge bar's button reads "Squash and merge on a Friday?" too. Nothing is blocked; it's only a nudge.
+All day Friday (your local time), the merge card on a PR's Conversation tab gets an extra row, styled like its other checks, just above the merge button. It starts gentle in the morning and gets more alarmed in the afternoon, after 3pm and into the evening, with a different message picked at random each time the page loads. The sticky merge bar's button reads "Squash and merge on a Friday?" too. Nothing is blocked; it's only a nudge.
 
 ### File triage
 
@@ -90,7 +90,7 @@ Content scripts run on `github.com`. The only permission is `storage`, for the p
 - `src/pr-review.js` throws confetti after an LGTM with a bundled copy of [confetti.js](https://confettijs.org) (`vendor/`, ISC). It watches the page with a `MutationObserver` and targets GitHub's new React PR pages (`/pull/:number` and `/pull/:number/changes`). Files are grouped by path patterns, listed in `CATEGORIES` at the top of the file. The classic signed-out `/files` page is left alone.
 - `src/absolute-dates.js` switches GitHub's `<relative-time>` elements to absolute mode, then writes the formatted text into each one, re-applying it if GitHub re-renders. The formats live in `src/settings.js` so the popup can preview them, and are built by hand because `Intl` always puts a space before AM/PM.
 - `src/merge-bar.js` reads the section headings of GitHub's merge box (`[data-testid="mergebox-border-container"]`), re-reads them as the page updates, and hides the bar with an `IntersectionObserver` while the merge box is visible.
-- `src/friday.js` checks the local day and hour on each page update and puts its banner at the top of the merge card's footer, the section of `[data-testid="mergebox-border-container"]` holding the merge button.
+- `src/friday.js` checks the local day and hour on each page update and adds its row to the merge card (`[data-testid="mergebox-border-container"]`) just before the footer holding the merge button.
 - `src/md-review.js` reads each Markdown file's source diff lines before switching it to rich, then matches each rendered block to its lines by comparing letters and digits only. Commenting drives GitHub's own line selection and "Add comment" button.
 - `src/hide-copilot.css` hides anything with a Copilot icon, plus the Agents tab.
 - `src/repo-files.js` swaps GitHub's file octicons for icons from `icons/`, chosen by `src/file-icons-data.js`. Both are generated from the `material-icon-theme` npm package by `scripts/vendor-icons.js` (icons are MIT, see `icons/LICENSE`). Thumbnails load from `/raw/`. Folder downloads read GitHub's tree JSON and build an uncompressed ZIP in the page. Quick view highlights with a bundled copy of [highlight.js](https://highlightjs.org) (`vendor/`, BSD-3-Clause), coloured with GitHub's `--color-prettylights-syntax-*` variables so it follows your theme.
