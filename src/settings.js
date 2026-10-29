@@ -62,6 +62,7 @@ globalThis.GH_TWEAKS_FEATURES = [
   { group: 'Pull requests', key: 'sinceReview', label: 'Changes since your review', description: 'A header button showing only what was pushed since you last reviewed.' },
   { group: 'Pull requests', key: 'reviewEstimate', label: 'Review time estimate', description: 'How long a PR takes to review, counting down as you go.' },
   { group: 'Pull requests', key: 'fileTriage', label: 'File triage', description: 'Filter chips and review progress on Files changed.' },
+  { group: 'Pull requests', key: 'notifyReady', label: 'Notify when ready', description: 'A desktop notification when an open PR is ready to merge or starts failing.' },
   { group: 'Pull requests', key: 'hideChecksTab', label: 'Hide Checks tab', description: 'Drop the Checks tab from PRs; checks still show in the merge box.' },
   { group: 'Pull requests', key: 'hideMergeHint', label: 'Hide command line merge hint', description: 'Drop "You can also merge this with the command line" from the merge box.' },
   { group: 'Pull requests', key: 'fridayWarning', label: 'Friday merge warning', description: 'A worried banner above the merge box on Fridays.' },

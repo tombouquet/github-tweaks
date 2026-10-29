@@ -14,9 +14,6 @@
     merge: '<path d="M5.45 5.154A4.25 4.25 0 0 0 9.25 7.5h1.378a2.251 2.251 0 1 1 0 1.5H9.25A5.734 5.734 0 0 1 5 7.123v3.505a2.25 2.25 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.95-.218ZM4.25 13.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm8.5-4.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM5 3.25a.75.75 0 1 0 0 .005V3.25Z"/>',
     lock: '<path d="M4 4a4 4 0 0 1 8 0v2h.25c.966 0 1.75.784 1.75 1.75v5.5A1.75 1.75 0 0 1 12.25 15h-8.5A1.75 1.75 0 0 1 2 13.25v-5.5C2 6.784 2.784 6 3.75 6H4Zm8.25 3.5h-8.5a.25.25 0 0 0-.25.25v5.5c0 .138.112.25.25.25h8.5a.25.25 0 0 0 .25-.25v-5.5a.25.25 0 0 0-.25-.25ZM10.5 6V4a2.5 2.5 0 1 0-5 0v2Z"/>',
   };
-  // Headline priority when several sections need attention.
-  const STATE_RANK = { fail: 0, pending: 1, ok: 2 };
-  const KIND_RANK = ['review', 'checks', 'base'];
 
   let bar = null;
   let watched = null;
@@ -41,9 +38,7 @@
     }, 50);
   }
 
-  function mergeBox() {
-    return document.querySelector('[data-testid="mergebox-border-container"]');
-  }
+  const mergeBox = () => GH_TWEAKS_MERGE_STATUS.mergeBox();
 
   function update() {
     const box = CONVERSATION_PATH.test(location.pathname) && mergeBox();
@@ -59,7 +54,7 @@
       watched = partial;
     }
 
-    const status = readStatus(box, partial);
+    const status = GH_TWEAKS_MERGE_STATUS.read(box, partial);
     const key = JSON.stringify(status);
     if (key !== lastKey) {
       lastKey = key;
@@ -68,49 +63,6 @@
     // Attached to <html> so swapping <body> during navigation doesn't drop it.
     if (!bar.isConnected) document.documentElement.append(bar);
     place();
-  }
-
-  function readStatus(box, partial) {
-    const chips = [];
-    for (const section of box.children) {
-      const heading = section.querySelector('h3');
-      if (!heading) continue;
-      const title = heading.textContent.trim();
-      const detail = heading.nextElementSibling?.textContent.trim() ?? '';
-      const chip = classify(title, detail);
-      if (chip) chips.push({ ...chip, title, detail: chip.detail ?? detail });
-    }
-    const native = mergeButton(partial);
-    return {
-      chips,
-      mergeLabel: native?.textContent.trim().replace(/\d*\s*\(\d+\)$/, '') ?? null,
-    };
-  }
-
-  function classify(title, detail) {
-    if (/check/i.test(title)) {
-      const count = (word) => Number(detail.match(new RegExp(`(\\d+)\\s+${word}`, 'i'))?.[1] ?? 0);
-      const failing = count('failing') + count('failed') + count('cancelled') + count('timed out') + count('error');
-      const pending = count('pending') + count('in progress') + count('queued') + count('expected') + count('waiting');
-      const total = failing + pending + count('successful') + count('skipped') + count('neutral');
-      if (failing) return { kind: 'checks', state: 'fail', label: `${failing} failing`, detail: `${total - failing} of ${total} checks passed` };
-      if (pending) return { kind: 'checks', state: 'pending', label: `${pending} pending`, detail: `${total - pending} of ${total} checks done` };
-      return { kind: 'checks', state: 'ok', label: total ? `${total} passed` : 'Checks passed' };
-    }
-    if (/changes requested/i.test(title)) return { kind: 'review', state: 'fail', label: 'Changes requested' };
-    if (/approved/i.test(title)) return { kind: 'review', state: 'ok', label: 'Approved' };
-    if (/review/i.test(title)) return { kind: 'review', state: 'pending', label: 'Review required' };
-    if (/no conflicts/i.test(title)) return { kind: 'base', state: 'ok', label: 'No conflicts' };
-    if (/conflict/i.test(title)) return { kind: 'base', state: 'fail', label: 'Conflicts' };
-    if (/out-of-date|behind/i.test(title)) return { kind: 'base', state: 'pending', label: 'Out of date' };
-    return null;
-  }
-
-  // The real merge button ("Merge pull request", "Squash and merge", "Squash and merge stack"…).
-  function mergeButton(partial) {
-    return [...partial.querySelectorAll('button')].find(
-      (button) => /merge/i.test(button.textContent) && !/^rebase|command line/i.test(button.textContent.trim()) && !button.disabled,
-    );
   }
 
   function render({ chips, mergeLabel }) {
@@ -129,8 +81,8 @@
       });
     }
 
-    const lead = [...chips].sort((a, b) => STATE_RANK[a.state] - STATE_RANK[b.state] || KIND_RANK.indexOf(a.kind) - KIND_RANK.indexOf(b.kind))[0];
-    const ready = chips.every((chip) => chip.state === 'ok');
+    const { lead, ready: allPassed } = GH_TWEAKS_MERGE_STATUS.summarize(chips);
+    const ready = allPassed || !chips.length;
     bar.dataset.state = ready ? 'ok' : lead.state;
 
     const icon = document.createElement('span');
@@ -183,7 +135,7 @@
     // Hand off to GitHub's own button, which shows its usual confirm step.
     event.stopPropagation();
     const partial = mergeBox()?.closest('[data-testid="mergebox-partial"]');
-    if (partial) mergeButton(partial)?.click();
+    if (partial) GH_TWEAKS_MERGE_STATUS.mergeButton(partial)?.click();
   }
 
   function scrollToBox() {

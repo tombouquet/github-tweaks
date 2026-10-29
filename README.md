@@ -6,6 +6,7 @@ Chrome extension with a few fixes for GitHub:
 - **Open in Claude Code:** the Code dropdown in a PR's header becomes a Claude Code button that opens the PR in Claude Code with a prompt ready to send.
 - **Submit review from Conversation:** a floating button on the Conversation tab that jumps to Files changed with the review dialog already open, plus an LGTM button that approves with an "LGTM" comment in one click.
 - **Sticky merge bar:** a bar at the bottom of the Conversation tab shows whether checks passed, reviews and conflicts, with the merge button, so you don't have to scroll to the bottom.
+- **Notify when ready:** a desktop notification when a PR you have open becomes ready to merge or starts failing, and a ✅ or ❌ in its tab title.
 - **Hide Checks tab:** removes the Checks tab from PRs, since the merge box already shows check results.
 - **Hide command line merge hint:** removes "You can also merge this with the command line" from beside the merge button.
 - **Changes since your review:** a "2 new commits" button in a PR's header that opens Files changed with only what was pushed since you last reviewed.
@@ -72,6 +73,14 @@ Click anywhere on the bar to scroll to the merge box. The merge button scrolls t
 
 The bar casts a large shadow so it stands out from the timeline. Turn off **Shadow** under the merge bar switch in the popup for a flat bar.
 
+### Notify when ready
+
+Leave a PR's Conversation tab open and get on with something else. When the merge box changes to ready to merge (checks passed, approved, no conflicts), you get a desktop notification. You also get one when something starts failing: checks fail, changes are requested or conflicts appear. Click the notification to jump back to the tab. Nothing fires while you're looking at the tab, and nothing fires for where the PR stands when the page loads, only for changes after.
+
+The tab's title also starts with ✅ when the PR is ready to merge and ❌ when something is failing, so you can spot it in your tab bar.
+
+The notifications come from Chrome, so your system has to allow notifications from Chrome. The extension asks for the `notifications` permission for this.
+
 ### Hide Checks tab
 
 A PR's tabs read Conversation, Commits, Files changed, with no Checks tab. Check results still show in the merge box and the sticky merge bar, and `/pull/:number/checks` still opens if you go there directly.
@@ -114,14 +123,15 @@ In any repo file list, click a file row anywhere outside its links to quick view
 
 ## How it works
 
-Content scripts run on `github.com`. The only permission is `storage`, for the popup settings. No build step.
+Content scripts run on `github.com`. The permissions are `storage`, for the popup settings, and `notifications`, for Notify when ready. No build step.
 
 - `src/settings.js` lists the tweaks and loads their on/off state from `chrome.storage.sync` (default on). Every content script waits for it before starting, and `popup.html` builds its switches from the same list.
 
 - `src/content.js` intercepts clicks on `.markdown-body img` when the URL is a PR (`/:owner/:repo/pull/:number`) and renders the viewer inside a Shadow DOM, so GitHub's styles don't leak in.
 - `src/pr-review.js` throws confetti after an LGTM with a bundled copy of [confetti.js](https://confettijs.org) (`vendor/`, ISC). It watches the page with a `MutationObserver` and targets GitHub's new React PR pages (`/pull/:number` and `/pull/:number/changes`). Files are grouped by path patterns, listed in `GH_TWEAKS_FILE_CATEGORIES` in `src/settings.js`. The classic signed-out `/files` page is left alone.
 - `src/absolute-dates.js` switches GitHub's `<relative-time>` elements to absolute mode, then writes the formatted text into each one, re-applying it if GitHub re-renders. The formats live in `src/settings.js` so the popup can preview them, and are built by hand because `Intl` always puts a space before AM/PM.
-- `src/merge-bar.js` reads the section headings of GitHub's merge box (`[data-testid="mergebox-border-container"]`), re-reads them as the page updates, and hides the bar with an `IntersectionObserver` while the merge box is visible.
+- `src/merge-status.js` reads the section headings of GitHub's merge box (`[data-testid="mergebox-border-container"]`) into statuses for checks, review and conflicts. `src/merge-bar.js` re-reads them as the page updates and hides the bar with an `IntersectionObserver` while the merge box is visible.
+- `src/notify-ready.js` watches the same statuses and messages `src/background.js`, the extension's service worker, which shows the notification with `chrome.notifications` and focuses the PR's tab when it's clicked.
 - `src/pr-data.js` is shared by the PR header tweaks. It finds the PR in the URL and loads the JSON GitHub's own Files changed page renders from (`/pull/:number/changes` with `Accept: application/json`), cached for a minute: every changed file with its line counts and viewed state, plus the head commit and the commit you last reviewed.
 - `src/claude-code.js` builds `claude-cli://open?repo=owner/name&q=<prompt>` from the PR's number, title and URL, using the prompts in `GH_TWEAKS_CLAUDE_PROMPTS` (`src/settings.js`), and hides GitHub's Code button. The Claude logo is from [Simple Icons](https://simpleicons.org) (CC0).
 - `src/since-review.js` links to `/pull/:number/changes/<last reviewed>..<head>` using the commits from that JSON. Its button copies the classes of GitHub's Code button so it matches the header.

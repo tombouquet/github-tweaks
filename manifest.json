@@ -10,8 +10,12 @@
     "128": "images/icon-128.png"
   },
   "permissions": [
-    "storage"
+    "storage",
+    "notifications"
   ],
+  "background": {
+    "service_worker": "src/background.js"
+  },
   "action": {
     "default_title": "GitHub Tweaks",
     "default_popup": "popup.html",
@@ -38,7 +42,9 @@
         "src/file-icons-data.js",
         "vendor/highlight.min.js",
         "src/repo-files.js",
+        "src/merge-status.js",
         "src/merge-bar.js",
+        "src/notify-ready.js",
         "src/merge-hint.js",
         "src/hide-checks-tab.js",
         "src/friday.js",
