@@ -50,6 +50,7 @@ globalThis.GH_TWEAKS_FEATURES = [
   { group: 'Pull requests', key: 'lightbox', label: 'Image lightbox', description: 'Open PR images in a zoomable gallery.' },
   { group: 'Pull requests', key: 'reviewButton', label: 'Submit review and LGTM buttons', description: 'Open the review dialog, or approve with LGTM, from the Conversation tab.' },
   { group: 'Pull requests', key: 'mergeBar', label: 'Sticky merge bar', description: 'Checks, reviews and the merge button, always in view.', toggle: { key: 'mergeBarShadow', label: 'Shadow', description: 'Glow that lifts the bar off the page.' } },
+  { group: 'Pull requests', key: 'sinceReview', label: 'Changes since your review', description: 'A header button showing only what was pushed since you last reviewed.' },
   { group: 'Pull requests', key: 'reviewEstimate', label: 'Review time estimate', description: 'How long a PR takes to review, counting down as you go.' },
   { group: 'Pull requests', key: 'fileTriage', label: 'File triage', description: 'Filter chips and review progress on Files changed.' },
   { group: 'Pull requests', key: 'hideChecksTab', label: 'Hide Checks tab', description: 'Drop the Checks tab from PRs; checks still show in the merge box.' },

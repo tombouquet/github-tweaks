@@ -7,6 +7,7 @@ Chrome extension with a few fixes for GitHub:
 - **Sticky merge bar:** a bar at the bottom of the Conversation tab shows whether checks passed, reviews and conflicts, with the merge button, so you don't have to scroll to the bottom.
 - **Hide Checks tab:** removes the Checks tab from PRs, since the merge box already shows check results.
 - **Hide command line merge hint:** removes "You can also merge this with the command line" from beside the merge button.
+- **Changes since your review:** a "2 new commits" button in a PR's header that opens Files changed with only what was pushed since you last reviewed.
 - **Review time estimate:** a "~12 min review" chip next to a PR's line count, skipping lockfiles and generated files and counting down as you mark files viewed.
 - **Friday merge warning:** on Fridays, an extra row in the merge card asks if you're sure, with a random message that gets more nervous as the day goes on.
 - **File triage:** filter chips above the file tree that hide lockfiles, generated files, tests, docs, config or source, with a review progress bar that counts only the files still shown.
@@ -67,6 +68,10 @@ A PR's tabs read Conversation, Commits, Files changed, with no Checks tab. Check
 
 The "You can also merge this with the command line. View command line instructions." line beside GitHub's merge button is hidden. Turn the switch off to bring it back.
 
+### Changes since your review
+
+When commits have landed on a PR since your last review, a button such as **2 new commits** appears in the PR's header, beside the Code button. Click it to open Files changed showing only those commits, the same view as "Changes since your last review" in GitHub's commit picker, without opening the picker. While you're in that view it reads **All changes** and takes you back to the full diff. It stays hidden on PRs you haven't reviewed, or when nothing is new.
+
 ### Review time estimate
 
 Next to the `+30 −4` line count in a PR's header, on both the Conversation and Files changed tabs, a chip guesses how long the review will take, such as `~12 min review`. Lockfiles, generated and vendored files don't count, and nor do groups you've hidden with File triage. Tests, docs and config count for less than source, deletions count for less than additions, and every file adds a little for the context switch. Once you start marking files as Viewed it shows what's left, such as `~4 min left`, and turns green at `All viewed`. Hover it for the full estimate and the line count it's based on. A slim pill-shaped placeholder holds its spot while GitHub's file list loads.
@@ -106,6 +111,7 @@ Content scripts run on `github.com`. The only permission is `storage`, for the p
 - `src/absolute-dates.js` switches GitHub's `<relative-time>` elements to absolute mode, then writes the formatted text into each one, re-applying it if GitHub re-renders. The formats live in `src/settings.js` so the popup can preview them, and are built by hand because `Intl` always puts a space before AM/PM.
 - `src/merge-bar.js` reads the section headings of GitHub's merge box (`[data-testid="mergebox-border-container"]`), re-reads them as the page updates, and hides the bar with an `IntersectionObserver` while the merge box is visible.
 - `src/pr-data.js` is shared by the PR header tweaks. It finds the PR in the URL and loads the JSON GitHub's own Files changed page renders from (`/pull/:number/changes` with `Accept: application/json`), cached for a minute: every changed file with its line counts and viewed state, plus the head commit and the commit you last reviewed.
+- `src/since-review.js` links to `/pull/:number/changes/<last reviewed>..<head>` using the commits from that JSON. Its button copies the classes of GitHub's Code button so it matches the header.
 - `src/review-estimate.js` weighs each file from that JSON by its File triage group, and reads the Viewed toggles on the page for anything you've marked since it loaded.
 - `src/hide-checks-tab.js` hides the `/checks` link in the PR's tab bar with CSS.
 - `src/merge-hint.js` hides the muted line in the merge box that holds the "View command line instructions" link.

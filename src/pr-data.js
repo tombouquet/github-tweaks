@@ -36,6 +36,30 @@ globalThis.GH_TWEAKS_PR = (() => {
     return code?.parentElement ?? null;
   }
 
+  // A link styled like GitHub's own header buttons, copying the Code button's
+  // classes so it follows GitHub's theme. `icon` is an Octicon's <path> markup.
+  function headerButton({ className, icon, label, title }) {
+    const code = headerActions()?.querySelector('button[aria-haspopup]');
+    const classOf = (selector) => code?.querySelector(selector)?.className ?? '';
+    const link = document.createElement('a');
+    link.className = `${code?.className.replace(/\bhideLeadingVisual\S*/, '') ?? ''} ${className}`.trim();
+    link.dataset.size = 'medium';
+    link.dataset.variant = 'default';
+    link.title = title;
+    link.style.textDecoration = 'none';
+    link.innerHTML = `<span class="${classOf('[data-component="buttonContent"]')}" data-component="buttonContent" data-align="center"><span class="${classOf('[data-component="leadingVisual"]')}" data-component="leadingVisual"><svg aria-hidden="true" viewBox="0 0 16 16" width="16" height="16" fill="currentColor" class="octicon">${icon}</svg></span><span class="${classOf('[data-component="text"]')}" data-component="text"></span></span>`;
+    link.querySelector('[data-component="text"]').textContent = label;
+    return link;
+  }
+
+  // Puts `element` just before the Code button, and back again if GitHub re-renders the header.
+  function placeBeforeCode(element) {
+    const actions = headerActions();
+    if (!actions) return false;
+    if (element.parentElement !== actions) actions.insertBefore(element, [...actions.children].find((child) => child.matches('button[aria-haspopup]')) ?? null);
+    return true;
+  }
+
   // The "+30 −4" line count next to the PR's tabs.
   function headerDiffstat() {
     const label = [...document.querySelectorAll('[data-component="PH_Navigation"] .sr-only')].find((element) =>
@@ -44,5 +68,5 @@ globalThis.GH_TWEAKS_PR = (() => {
     return label?.parentElement ?? null;
   }
 
-  return { current, changes, headerActions, headerDiffstat };
+  return { current, changes, headerActions, headerButton, placeBeforeCode, headerDiffstat };
 })();
