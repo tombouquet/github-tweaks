@@ -6,7 +6,7 @@
   // Longer than the popup's one-liners: where each tweak shows up and how to use it.
   const DETAILS = {
     lightbox: 'Click any image in a PR description or comment to open every image in the PR as a gallery. Zoom with the scroll wheel or pinch, drag to pan, and use the arrow keys to move between images.',
-    claudeCode: 'The Code dropdown at the top right of a PR becomes a Claude Code button. It opens Claude Code in your local clone with a prompt about the PR typed in, ready to send. Pick or edit the prompts with the cog in the popup.',
+    claudeCode: 'The Code dropdown at the top right of a PR becomes a Claude Code button. It opens Claude Code in your local clone with a prompt about the PR typed in, ready to send. Pick the prompt below, or edit them with the cog.',
     reviewButton: 'Floating buttons at the bottom right of the Conversation tab. Submit review opens Files changed with the review dialog open; LGTM approves with an "LGTM" comment and throws confetti. LGTM hides on your own PRs.',
     mergeBar: "While the merge box is off screen, a bar floats over the timeline with the PR's most important blocker, its other statuses and the merge button. Click it to jump to the merge box.",
     sinceReview: 'When commits have been pushed since your last review, a "2 new commits" button appears in the PR header. It opens Files changed with only those commits.',
@@ -43,7 +43,16 @@
         list.className = 'tweaks';
         container.append(heading, list);
       }
-      list.append(tweak(feature, settings[feature.key]));
+      const row = tweak(feature, settings[feature.key]);
+      list.append(row);
+      const sub = feature.choice ? choiceRow(feature.choice, settings) : feature.toggle && toggleRow(feature.toggle, settings[feature.toggle.key]);
+      if (sub) {
+        list.append(sub.row);
+        // Like the popup, a sub-option only matters while its tweak is on.
+        const main = row.querySelector('input[role="switch"]');
+        sub.input.disabled = !main.checked;
+        main.addEventListener('change', () => (sub.input.disabled = !main.checked));
+      }
     }
   });
 
@@ -64,12 +73,59 @@
     toggle.setAttribute('aria-label', label);
     toggle.checked = on;
     toggle.addEventListener('change', () => {
-      chrome.storage.sync.set({ [key]: toggle.checked });
+      save({ [key]: toggle.checked });
       element.classList.toggle('on', toggle.checked);
       state.textContent = toggle.checked ? 'On' : 'Off';
-      flash.hidden = false;
     });
     element.append(toggle);
     return element;
+  }
+
+  // A dropdown under its tweak, as in the popup. Editable lists (the Claude Code
+  // prompts) get the same cog, opening the prompt editor.
+  function choiceRow({ key, label, options: builtIn, optionsKey, editLabel }, settings) {
+    const row = document.createElement('div');
+    row.className = 'sub';
+    const text = document.createElement('span');
+    text.className = 'label';
+    text.textContent = label;
+    const select = document.createElement('select');
+    select.setAttribute('aria-label', label);
+    const options = settings[optionsKey]?.length ? settings[optionsKey] : builtIn;
+    const now = new Date();
+    for (const option of options) select.append(new Option(option.label ?? option.format(now), option.key, false, option.key === settings[key]));
+    select.addEventListener('change', () => save({ [key]: select.value }));
+    row.append(text, select);
+    if (editLabel) {
+      const edit = document.createElement('button');
+      edit.type = 'button';
+      edit.className = 'icon-button';
+      edit.title = editLabel;
+      edit.setAttribute('aria-label', editLabel);
+      edit.innerHTML = GH_TWEAKS_GEAR_ICON;
+      edit.addEventListener('click', () => (location.href = 'options.html'));
+      row.append(edit);
+    }
+    return { row, input: select };
+  }
+
+  function toggleRow({ key, label, description }, on) {
+    const row = document.createElement('label');
+    row.className = 'sub';
+    const text = document.createElement('span');
+    text.className = 'label';
+    text.textContent = `${label}: ${description}`;
+    const input = document.createElement('input');
+    input.type = 'checkbox';
+    input.setAttribute('role', 'switch');
+    input.checked = on;
+    input.addEventListener('change', () => save({ [key]: input.checked }));
+    row.append(text, input);
+    return { row, input };
+  }
+
+  function save(values) {
+    chrome.storage.sync.set(values);
+    flash.hidden = false;
   }
 })();
