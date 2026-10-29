@@ -6,6 +6,7 @@
 <link rel="stylesheet" href="src/page.css">
 <style>
   .version { color: var(--fg-muted); font-size: 14px; }
+  a.version:hover { color: var(--accent); }
   .byline { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; margin: 0 0 8px; }
   .author { display: inline-flex; align-items: center; gap: 8px; color: var(--fg); font-weight: 600; }
   .author img { width: 24px; height: 24px; border-radius: 50%; }
@@ -78,12 +79,13 @@
 <header>
   <img src="images/icon-48.png" alt="">
   <h1>GitHub Tweaks</h1>
-  <span class="version" id="version"></span>
+  <a class="version" id="version" href="changelog.html" title="Changelog"></a>
 </header>
 <div class="byline">
   <a class="author" href="https://github.com/tombouquet" target="_blank" rel="noopener"><img src="https://github.com/tombouquet.png?size=48" alt="">Tom Bouquet</a>
   <a href="https://github.com/tombouquet" target="_blank" rel="noopener">@tombouquet on GitHub</a>
   <a class="repo" href="https://github.com/tombouquet/github-tweaks" target="_blank" rel="noopener">Source and README</a>
+  <a href="changelog.html">Changelog</a>
 </div>
 <p class="intro">Every tweak, what it does and where to find it. Turn any of them off here or from the toolbar popup; changes apply when you reload GitHub.</p>
 <main id="groups"></main>

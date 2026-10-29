@@ -1,8 +1,15 @@
 // Shows desktop notifications for the content scripts (pages can't use
 // chrome.notifications), and brings the PR's tab forward when one is clicked.
+// Update checks and the changelog-on-update live in updates.js.
+importScripts('version.js', 'updates.js');
+
 const TABS_KEY = 'notificationTabs';
 
 chrome.runtime.onMessage.addListener((message, sender) => {
+  if (message?.type === 'checkForUpdate') {
+    checkIfStale();
+    return;
+  }
   if (message?.type !== 'notify' || !sender.tab) return;
   const id = `${message.tag}-${Date.now()}`;
   chrome.notifications.create(id, {
@@ -20,6 +27,7 @@ chrome.runtime.onMessage.addListener((message, sender) => {
 });
 
 chrome.notifications.onClicked.addListener(async (id) => {
+  if (await openUpdateNotification(id)) return;
   const stored = await chrome.storage.session.get({ [TABS_KEY]: {} });
   const target = stored[TABS_KEY][id];
   chrome.notifications.clear(id);

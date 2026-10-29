@@ -5,7 +5,34 @@
   const container = document.getElementById('features');
   const flash = document.getElementById('flash');
 
-  document.getElementById('version').textContent = `v${chrome.runtime.getManifest().version}`;
+  const version = chrome.runtime.getManifest().version;
+  const versionLink = document.getElementById('version');
+  versionLink.textContent = `v${version}`;
+  versionLink.addEventListener('click', (event) => {
+    event.preventDefault();
+    chrome.tabs.create({ url: chrome.runtime.getURL('changelog.html') });
+    window.close();
+  });
+
+  // Update banner: the background worker stores the latest release; ask it to refresh if stale.
+  let releaseUrl;
+  function showUpdate(update) {
+    const banner = document.getElementById('update');
+    banner.hidden = !GH_TWEAKS_IS_NEWER(update?.latestVersion, version);
+    if (banner.hidden) return;
+    document.getElementById('update-title').textContent = `v${update.latestVersion} is available (you're on v${version})`;
+    releaseUrl = update.releaseUrl;
+  }
+  chrome.storage.local.get(GH_TWEAKS_UPDATE_KEY).then((stored) => showUpdate(stored[GH_TWEAKS_UPDATE_KEY]));
+  chrome.storage.onChanged.addListener((changes, area) => {
+    if (area === 'local' && changes[GH_TWEAKS_UPDATE_KEY]) showUpdate(changes[GH_TWEAKS_UPDATE_KEY].newValue);
+  });
+  chrome.runtime.sendMessage({ type: 'checkForUpdate' }).catch(() => {});
+  document.getElementById('update-notes').addEventListener('click', () => {
+    chrome.tabs.create({ url: releaseUrl || chrome.runtime.getURL('changelog.html') });
+    window.close();
+  });
+  document.getElementById('update-reload').addEventListener('click', () => chrome.runtime.reload());
   document.getElementById('about').addEventListener('click', () => {
     chrome.tabs.create({ url: chrome.runtime.getURL('about.html') });
     window.close();

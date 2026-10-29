@@ -54,7 +54,17 @@
   header img, header .icon-button { width: 24px; height: 24px; align-self: center; }
   header .icon-button { width: 28px; height: 28px; }
   h1 { margin: 0; font-size: 16px; font-weight: 600; }
-  .version { color: var(--fg-muted); font-size: 12px; }
+  .version { color: var(--fg-muted); font-size: 12px; text-decoration: none; }
+  .version:hover { color: var(--accent); text-decoration: underline; }
+  /* Shown while a newer release is out; filled in by popup.js. */
+  .update { margin-bottom: 16px; padding: 8px 12px; border: 1px solid var(--accent-border); border-radius: 6px; background: var(--accent-subtle); }
+  .update[hidden] { display: none; }
+  .update strong { display: block; }
+  .update .steps { display: block; margin-bottom: 8px; color: var(--fg-muted); font-size: 12px; }
+  .update code { font: 11px ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .update .buttons { display: flex; gap: 8px; }
+  .update .primary { border-color: #1f232826; background: var(--primary); color: #ffffff; }
+  .update .primary:hover { background: var(--primary-hover); }
   h2 { margin: 16px 0 8px; font-size: 12px; font-weight: 600; color: var(--fg-muted); }
   h2:first-of-type { margin-top: 0; }
   .box { border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
@@ -175,16 +185,25 @@
 <header>
   <img src="images/icon-48.png" alt="">
   <h1>GitHub Tweaks</h1>
-  <span class="version" id="version"></span>
+  <a class="version" id="version" href="changelog.html" title="Changelog"></a>
   <!-- Octicon book (MIT). -->
   <button type="button" class="icon-button about" id="about" title="All tweaks" aria-label="All tweaks"><svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M0 1.75A.75.75 0 0 1 .75 1h4.253c1.227 0 2.317.59 3 1.501A3.743 3.743 0 0 1 11.006 1h4.245a.75.75 0 0 1 .75.75v10.5a.75.75 0 0 1-.75.75h-4.507a2.25 2.25 0 0 0-1.591.659l-.622.621a.75.75 0 0 1-1.06 0l-.622-.621A2.25 2.25 0 0 0 5.258 13H.75a.75.75 0 0 1-.75-.75Zm7.251 10.324.004-5.073-.002-2.253A2.25 2.25 0 0 0 5.003 2.5H1.5v9h3.757a3.75 3.75 0 0 1 1.994.574ZM8.755 4.75l-.004 7.322a3.752 3.752 0 0 1 1.992-.572H14.5v-9h-3.495a2.25 2.25 0 0 0-2.25 2.25Z"/></svg></button>
 </header>
+<div class="update" id="update" role="status" hidden>
+  <strong id="update-title"></strong>
+  <span class="steps">Run <code>git pull</code> in your clone (or download the zip), then reload.</span>
+  <div class="buttons">
+    <button type="button" id="update-notes">What's new</button>
+    <button type="button" class="primary" id="update-reload">Reload extension</button>
+  </div>
+</div>
 <main id="features"></main>
 <div class="flash" id="flash" role="status" hidden>
   <span>Reload GitHub to apply changes.</span>
   <button type="button" id="reload">Reload tab</button>
 </div>
 <script src="src/settings.js"></script>
+<script src="src/version.js"></script>
 <script src="src/popup.js"></script>
 </body>
 </html>
