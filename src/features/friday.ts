@@ -61,7 +61,8 @@ function update() {
   const friday = now.getDay() === 5;
   document.documentElement.toggleAttribute(FRIDAY_ATTR, friday);
   const card = friday && CONVERSATION_PATH.test(location.pathname) && document.querySelector<HTMLElement>('[data-testid="mergebox-border-container"]');
-  if (!card) {
+  // A merged or closed PR has nothing left to merge, so nothing to worry about.
+  if (!card || isDone(card)) {
     banner?.remove();
     return;
   }
@@ -79,6 +80,13 @@ function update() {
     if (footer) footer.before(banner);
     else card.append(banner);
   }
+}
+
+// GitHub swaps the merge box's rows for "Pull request successfully merged and closed" or
+// "Closed with unmerged commits" once a PR is merged or closed.
+function isDone(card: Element): boolean {
+  const text = (card.textContent ?? '').replace(banner?.textContent ?? '', '');
+  return /successfully merged|merged and closed|closed with unmerged/i.test(text);
 }
 
 function mergeFooter(card: Element) {
