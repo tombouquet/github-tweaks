@@ -67,6 +67,7 @@ globalThis.GH_TWEAKS_FEATURES = [
   { group: 'Pull requests', key: 'hideMergeHint', label: 'Hide command line merge hint', description: 'Drop "You can also merge this with the command line" from the merge box.' },
   { group: 'Pull requests', key: 'fridayWarning', label: 'Friday merge warning', description: 'A worried banner above the merge box on Fridays.' },
   { group: 'Pull requests', key: 'markdownReview', label: 'Rich Markdown review', description: 'Comment on rendered Markdown blocks.' },
+  { group: 'Repository files', key: 'jumpToFile', label: 'Jump to file', description: 'Cmd/Ctrl+P in any repo to fuzzy-find a file.' },
   { group: 'Repository files', key: 'fileIcons', label: 'File icons', description: 'VS Code-style icons in file lists and trees.' },
   { group: 'Repository files', key: 'thumbnails', label: 'Image thumbnails', description: 'Preview images in file lists.' },
   { group: 'Repository files', key: 'downloads', label: 'Download files and folders', description: 'Download buttons, with folders as a ZIP.' },

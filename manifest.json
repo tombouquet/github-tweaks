@@ -42,6 +42,7 @@
         "src/file-icons-data.js",
         "vendor/highlight.min.js",
         "src/repo-files.js",
+        "src/jump-to-file.js",
         "src/merge-status.js",
         "src/merge-bar.js",
         "src/notify-ready.js",

@@ -26,10 +26,14 @@
   let scheduled = false;
   let settings;
 
+  // Lets Jump to file show the same icons and open files in Quick view.
+  globalThis.GH_TWEAKS_FILES = { iconUrl: (name) => chrome.runtime.getURL(`icons/${iconFor(name)}.svg`), quickView: null };
+
   GH_TWEAKS_SETTINGS.then((loaded) => {
     settings = loaded;
     if (!['fileIcons', 'thumbnails', 'downloads', 'quickView'].some((key) => settings[key])) return;
     injectStyles();
+    if (settings.quickView) GH_TWEAKS_FILES.quickView = openQuickView;
     new MutationObserver(schedule).observe(document.documentElement, { childList: true, subtree: true });
     if (settings.quickView) document.addEventListener('click', onRowClick);
     apply();

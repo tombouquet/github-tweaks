@@ -16,6 +16,7 @@ Chrome extension with a few fixes for GitHub:
 - **Rich Markdown review:** Markdown files on Files changed open as rich diffs, and you can select rendered paragraphs, list items or table rows to comment on their source lines.
 - **No Copilot:** Copilot buttons (header chat, Copilot panel, "Ask about this diff") and the Agents tab are hidden.
 - **Absolute dates:** every timestamp on github.com shows the real time and date, such as `4:29PM Oct 16, 2026`, instead of "last week".
+- **Jump to file:** press Cmd/Ctrl+P anywhere in a repo to fuzzy-find any file and open it or preview it in Quick view.
 - **File icons:** VS Code-style icons ([Material Icon Theme](https://github.com/material-extensions/vscode-material-icon-theme)) in repo file lists, the file tree and the PR file tree.
 - **Image thumbnails:** image files in a file list show a small preview in place of their icon. Hover it to enlarge.
 - **Download files and folders:** a download button on every file list row. Folders download as a ZIP, with no clone needed.
@@ -117,6 +118,20 @@ Quick view in repo file lists shows Markdown rendered too.
 
 Timestamps on every GitHub page (repo home, file lists, commits, PRs, issues, Actions, releases) show `4:29PM Oct 16, 2026` in your local time zone by default. Pick another format, such as `Oct 16, 2026 4:29PM`, `YYYY-MM-DD HH:mm` or date only, from the dropdown under Absolute dates in the popup. Hovering still shows GitHub's full tooltip. Durations, such as how long an Actions run took, are left as they are.
 
+### Jump to file
+
+Press **Cmd+P** (Ctrl+P on Windows and Linux) anywhere in a repo: its code, a PR, an issue, Actions. A finder opens over the page with every file in the repo. Type part of a name or path; letters don't need to be next to each other, so `chkguard` finds `checkout.guard.ts`. Matches in the file name rank above matches in folders.
+
+| Action | Keyboard |
+| --- | --- |
+| Move up / down | `↑` / `↓` (or `Ctrl+P` / `Ctrl+N`) |
+| Open the file | `Enter` or click |
+| Open in a new tab | `Cmd/Ctrl+Enter` or Cmd/Ctrl-click |
+| Preview in Quick view | `Shift+Enter` or Shift-click (needs Quick view on) |
+| Close | `Esc` or click outside |
+
+On code pages it searches the branch or tag you're looking at; everywhere else, the default branch. It takes over Cmd/Ctrl+P on GitHub, so use the browser menu to print a GitHub page.
+
 ### File icons, thumbnails, downloads and quick view
 
 In any repo file list, click a file row anywhere outside its links to quick view it; the file name still opens the normal file page. Hover a row for its download button next to the name. Files download as-is; folders, including their subfolders, are fetched file by file and saved as `repo-folder.zip`, with a progress count while it runs. Quick view shows code with GitHub's own syntax colours and images on a checkerboard; click its file name or the open button to go to the normal file page, copy the contents from its header, and close it with Esc or by clicking outside. This works on private repos you can access, since it uses your GitHub session.
@@ -142,4 +157,5 @@ Content scripts run on `github.com`. The permissions are `storage`, for the popu
 - `src/md-review.js` reads each Markdown file's source diff lines before switching it to rich, then matches each rendered block to its lines by comparing letters and digits only. Commenting drives GitHub's own line selection and "Add comment" button.
 - `src/hide-copilot.css` hides anything with a Copilot icon, plus the Agents tab.
 - `src/repo-files.js` swaps GitHub's file octicons for icons from `icons/`, chosen by `src/file-icons-data.js`. Both are generated from the `material-icon-theme` npm package by `scripts/vendor-icons.js` (icons are MIT, see `icons/LICENSE`). Thumbnails load from `/raw/`. Folder downloads read GitHub's tree JSON and build an uncompressed ZIP in the page. Quick view highlights with a bundled copy of [highlight.js](https://highlightjs.org) (`vendor/`, BSD-3-Clause), coloured with GitHub's `--color-prettylights-syntax-*` variables so it follows your theme.
+- `src/jump-to-file.js` loads every path in one request from `/:owner/:repo/tree-list/:commit`, the endpoint GitHub's own file finder uses, after looking up the branch's commit in its tree JSON. Icons and Quick view come from `src/repo-files.js` through `GH_TWEAKS_FILES`.
 - The extension icon in `images/` is drawn by `scripts/make-icon.js`.
