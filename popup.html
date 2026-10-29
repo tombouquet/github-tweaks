@@ -145,16 +145,21 @@
     cursor: pointer;
   }
   button:hover { background: var(--button-hover); }
-  button.link {
-    display: block;
+  /* A square icon button, sized to match the dropdown beside it. */
+  .icon-button {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    margin-left: -8px;
     padding: 0;
-    border: 0;
-    background: none;
-    color: var(--accent);
-    font-size: 12px;
-    font-weight: 400;
+    color: var(--fg-muted);
   }
-  button.link:hover { background: none; text-decoration: underline; }
+  .icon-button:hover { color: var(--fg); }
+  .icon-button:disabled { opacity: 0.5; cursor: not-allowed; }
+  .row.choice:has(.icon-button) select { max-width: 172px; }
 </style>
 </head>
 <body>

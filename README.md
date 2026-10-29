@@ -62,7 +62,7 @@ On a PR, the Code dropdown at the top right is replaced by a **Claude Code** but
 - **Check out the branch**: just `gh pr checkout`.
 - **Open the repo, no prompt**.
 
-To change these, click **Edit prompts…** under the dropdown. It opens a settings page where you can rename and rewrite each prompt, add your own, reorder or delete them, pick the default, or reset to the built-in ones. `{n}`, `{title}`, `{url}` and `{repo}` are filled in from the PR, and an empty prompt just opens the repo. Changes save as you type and sync with your other settings.
+To change these, click the cog beside the dropdown. It opens a settings page where you can rename and rewrite each prompt, add your own, reorder or delete them, pick the default, or reset to the built-in ones. `{n}`, `{title}`, `{url}` and `{repo}` are filled in from the PR, and an empty prompt just opens the repo. Changes save as you type and sync with your other settings.
 
 Claude Code finds your clone from the repo's `owner/name`, so run `claude` in that clone at least once first; otherwise it opens in your home directory. The link only works once Claude Code has registered its `claude-cli://` handler, which happens the first time you send a prompt in an interactive session. Your browser asks before opening it the first time. Turn the switch off to get the Code dropdown back.
 
