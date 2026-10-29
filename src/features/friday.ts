@@ -129,6 +129,6 @@ function injectStyles() {
       95% { transform: rotate(-6deg); }
     }
     @media (prefers-reduced-motion: reduce) { .gh-tweaks-friday-emoji { animation: none; } }
-    html[${FRIDAY_ATTR}] .gh-tweaks-merge-button[data-merge]::after { content: " on a Friday?"; white-space: pre; }
+    html[${FRIDAY_ATTR}] .gh-tweaks-merge-button[data-merge] .gh-tweaks-merge-label::after { content: " on a Friday?"; white-space: pre; }
   `);
 }

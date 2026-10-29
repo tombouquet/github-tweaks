@@ -110,7 +110,12 @@ function render(bar: HTMLDivElement, { chips, mergeLabel }: MergeStatus) {
   if (mergeLabel) {
     button.className = `gh-tweaks-merge-button ${ready ? 'gh-tweaks-merge-primary' : ''}`;
     button.innerHTML = svg(ICONS.merge);
-    button.append(mergeLabel);
+    // In its own span, so Friday's "on a Friday?" suffix flows with the text instead of
+    // becoming a separate flex item with the button's gap before it.
+    const label = document.createElement('span');
+    label.className = 'gh-tweaks-merge-label';
+    label.textContent = mergeLabel;
+    button.append(label);
     button.dataset.merge = '';
   } else {
     button.className = 'gh-tweaks-merge-button gh-tweaks-merge-blocked';
