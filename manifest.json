@@ -48,6 +48,7 @@
         "src/repo-files.js",
         "src/jump-to-file.js",
         "src/readme-toc.js",
+        "src/md-outline.js",
         "src/merge-status.js",
         "src/merge-bar.js",
         "src/notify-ready.js",

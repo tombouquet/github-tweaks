@@ -18,6 +18,7 @@ Chrome extension with a few fixes for GitHub:
 - **Absolute dates:** every timestamp on github.com shows the real time and date, such as `4:29PM Oct 16, 2026`, instead of "last week".
 - **Jump to file:** press Cmd/Ctrl+K anywhere in a repo to fuzzy-find any file and open it or preview it in Quick view.
 - **README contents:** a sticky outline of the README in a repo's sidebar that follows along as you read.
+- **Open Markdown outline:** a Markdown file's outline panel opens by default, and stays closed once you close it.
 - **File icons:** VS Code-style icons ([Material Icon Theme](https://github.com/material-extensions/vscode-material-icon-theme)) in repo file lists, the file tree and the PR file tree.
 - **Image thumbnails:** image files in a file list show a small preview in place of their icon. Hover it to enlarge.
 - **Download files and folders:** a download button on every file list row. Folders download as a ZIP, with no clone needed.
@@ -139,6 +140,10 @@ On code pages it searches the branch or tag you're looking at; everywhere else, 
 
 On a repo's home page, a **Contents** list of the README's headings sits at the bottom of the right-hand sidebar, under About, and stays in view as you scroll. The section you're reading is highlighted. Click a heading to scroll to it. It shows when the README has three or more headings and the sidebar sits beside it; on narrow windows, where the sidebar drops below the README, it's left out.
 
+### Open Markdown outline
+
+When you open a Markdown file, GitHub's outline panel (the list button in the file's toolbar) opens with it. Close it and later files open without it; open it again and it's back to opening by default. The choice is remembered in this browser.
+
 ### File icons, thumbnails, downloads and quick view
 
 In any repo file list, click a file row anywhere outside its links to quick view it; the file name still opens the normal file page. Hover a row for its download button next to the name. Files download as-is; folders, including their subfolders, are fetched file by file and saved as `repo-folder.zip`, with a progress count while it runs. Quick view shows code with GitHub's own syntax colours and images on a checkerboard; click its file name or the open button to go to the normal file page, copy the contents from its header, and close it with Esc or by clicking outside. This works on private repos you can access, since it uses your GitHub session.
@@ -167,4 +172,5 @@ Content scripts run on `github.com`. The permissions are `storage`, for the popu
 - `src/repo-files.js` swaps GitHub's file octicons for icons from `icons/`, chosen by `src/file-icons-data.js`. Both are generated from the `material-icon-theme` npm package by `scripts/vendor-icons.js` (icons are MIT, see `icons/LICENSE`). Thumbnails load from `/raw/`. Folder downloads read GitHub's tree JSON and build an uncompressed ZIP in the page. Quick view highlights with a bundled copy of [highlight.js](https://highlightjs.org) (`vendor/`, BSD-3-Clause), coloured with GitHub's `--color-prettylights-syntax-*` variables so it follows your theme.
 - `src/jump-to-file.js` loads every path in one request from `/:owner/:repo/tree-list/:commit`, the endpoint GitHub's own file finder uses, after looking up the branch's commit in its tree JSON. Icons and Quick view come from `src/repo-files.js` through `GH_TWEAKS_FILES`.
 - `src/readme-toc.js` lists the README's `.markdown-heading` blocks (h1 to h3) in GitHub's sidebar pane, which it lets overflow so the list can stick to the page.
+- `src/md-outline.js` clicks the outline button (`button[class*="TableOfContents"]`) once per file, and saves your own opens and closes, read from its `aria-pressed`, in `localStorage`.
 - The extension icon in `images/` is drawn by `scripts/make-icon.js`.

@@ -71,6 +71,7 @@ globalThis.GH_TWEAKS_FEATURES = [
   { group: 'Pull requests', key: 'markdownReview', label: 'Rich Markdown review', description: 'Comment on rendered Markdown blocks.' },
   { group: 'Repository files', key: 'jumpToFile', label: 'Jump to file', description: 'Cmd/Ctrl+K in any repo to fuzzy-find a file.' },
   { group: 'Repository files', key: 'readmeToc', label: 'README contents', description: "A sticky outline of the README in the repo's sidebar." },
+  { group: 'Repository files', key: 'markdownOutline', label: 'Open Markdown outline', description: "Show a Markdown file's outline by default; close it to keep it closed." },
   { group: 'Repository files', key: 'fileIcons', label: 'File icons', description: 'VS Code-style icons in file lists and trees.' },
   { group: 'Repository files', key: 'thumbnails', label: 'Image thumbnails', description: 'Preview images in file lists.' },
   { group: 'Repository files', key: 'downloads', label: 'Download files and folders', description: 'Download buttons, with folders as a ZIP.' },
