@@ -33,7 +33,7 @@ Reload any open GitHub tabs afterwards.
 
 ## Usage
 
-Every tweak is on by default. Click the extension icon in the toolbar to turn any of them off; changes apply when the GitHub tab reloads.
+Every tweak is on by default. Click the extension icon in the toolbar to turn any of them off; changes apply when the GitHub tab reloads. The book button at the top of the popup opens **All tweaks**, a full page with a longer rundown of every tweak and where to find it, its own switches, and a link to the author's GitHub.
 
 ### Image lightbox
 
@@ -155,6 +155,7 @@ Content scripts run on `github.com`. The permissions are `storage`, for the popu
 - `src/merge-status.js` reads the section headings of GitHub's merge box (`[data-testid="mergebox-border-container"]`) into statuses for checks, review and conflicts. `src/merge-bar.js` re-reads them as the page updates and hides the bar with an `IntersectionObserver` while the merge box is visible.
 - `src/notify-ready.js` watches the same statuses and messages `src/background.js`, the extension's service worker, which shows the notification with `chrome.notifications` and focuses the PR's tab when it's clicked.
 - `src/pr-data.js` is shared by the PR header tweaks. It finds the PR in the URL and loads the JSON GitHub's own Files changed page renders from (`/pull/:number/changes` with `Accept: application/json`), cached for a minute, for the PR's commits and the commit you last reviewed.
+- `about.html` and `src/about.js` are the All tweaks page, built from `GH_TWEAKS_FEATURES` with a longer description of each tweak. It and the prompt editor share `src/page.css`.
 - `options.html` and `src/options.js` edit the Claude Code prompts, saved as `claudePrompts` in `chrome.storage.sync`. The popup's dropdown and the button read the same list.
 - `src/claude-code.js` builds `claude-cli://open?repo=owner/name&q=<prompt>` from the PR's number, title and URL, using your saved prompts, or the built-in ones in `GH_TWEAKS_CLAUDE_PROMPTS` (`src/settings.js`), and hides GitHub's Code button. The Claude logo is from [Simple Icons](https://simpleicons.org) (CC0).
 - `src/since-review.js` links to `/pull/:number/changes/<last reviewed>..<head>` using the commits from that JSON. Its button copies the classes of GitHub's Code button so it matches the header.

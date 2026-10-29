@@ -6,6 +6,10 @@
   const flash = document.getElementById('flash');
 
   document.getElementById('version').textContent = `v${chrome.runtime.getManifest().version}`;
+  document.getElementById('about').addEventListener('click', () => {
+    chrome.tabs.create({ url: chrome.runtime.getURL('about.html') });
+    window.close();
+  });
   document.getElementById('reload').addEventListener('click', async () => {
     await chrome.tabs.reload();
     window.close();
