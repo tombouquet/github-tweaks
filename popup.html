@@ -60,8 +60,9 @@
   .text { flex: 1; min-width: 0; }
   .label { display: block; font-weight: 600; }
   .description { display: block; color: var(--fg-muted); font-size: 12px; }
-  .row.choice { cursor: default; }
-  .row.choice:hover { background: none; }
+  /* Sub-options (a dropdown or extra switch under a tweak) sit on a tinted background to show they belong to the row above. */
+  .row.choice { cursor: default; background: var(--bg-muted); }
+  .row.choice:hover { background: var(--bg-muted); }
   .row.choice .label { font-weight: 400; }
   .row.choice:has(:disabled) .label { color: var(--fg-muted); }
   select {
