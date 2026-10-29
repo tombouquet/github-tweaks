@@ -3,14 +3,11 @@
   "bootstrap-sha": "c9d9c55",
   "packages": {
     ".": {
-      "release-type": "simple",
+      "release-type": "node",
       "package-name": "github-tweaks",
       "include-v-in-tag": true,
       "include-component-in-tag": false,
-      "changelog-path": "CHANGELOG.md",
-      "extra-files": [
-        { "type": "json", "path": "manifest.json", "jsonpath": "$.version" }
-      ]
+      "changelog-path": "CHANGELOG.md"
     }
   }
 }
