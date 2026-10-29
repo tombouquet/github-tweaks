@@ -64,7 +64,7 @@ The "You can also merge this with the command line. View command line instructio
 
 ### Review time estimate
 
-Next to the `+30 −4` line count in a PR's header, on both the Conversation and Files changed tabs, a chip guesses how long the review will take, such as `~12 min review`. Lockfiles, generated and vendored files don't count, and nor do groups you've hidden with File triage. Tests, docs and config count for less than source, deletions count for less than additions, and every file adds a little for the context switch. Once you start marking files as Viewed it shows what's left, such as `~4 min left`, and turns green at `All viewed`. Hover it for the full estimate and the line count it's based on.
+Next to the `+30 −4` line count in a PR's header, on both the Conversation and Files changed tabs, a chip guesses how long the review will take, such as `~12 min review`. Lockfiles, generated and vendored files don't count, and nor do groups you've hidden with File triage. Tests, docs and config count for less than source, deletions count for less than additions, and every file adds a little for the context switch. Once you start marking files as Viewed it shows what's left, such as `~4 min left`, and turns green at `All viewed`. Hover it for the full estimate and the line count it's based on. A slim pill-shaped placeholder holds its spot while GitHub's file list loads.
 
 ### Friday merge warning
 

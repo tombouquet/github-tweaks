@@ -45,8 +45,18 @@
       chip?.remove();
       return;
     }
+    // A pill-shaped skeleton holds the spot until this PR's data arrives.
+    const pr = GH_TWEAKS_PR.current().base;
+    chip ??= createChip();
+    if (chip.dataset.pr !== pr) {
+      chip.dataset.pr = pr;
+      chip.dataset.loading = 'true';
+      chip.removeAttribute('title');
+    }
+    place(diffstat);
     const data = await GH_TWEAKS_PR.changes();
-    if (!data?.diffSummaries?.length) return chip?.remove();
+    if (GH_TWEAKS_PR.current()?.base !== pr) return;
+    if (!data?.diffSummaries?.length) return chip.remove();
 
     const hidden = loadHidden();
     const liveViewed = viewedOnPage();
@@ -63,7 +73,7 @@
       if (!(liveViewed.get(file.path) ?? file.markedAsViewed)) left += minutes;
     }
 
-    chip ??= createChip();
+    chip.dataset.loading = 'false';
     const done = total > 0 && left === 0;
     const text = !total ? 'Nothing to review' : done ? 'All viewed' : left < total ? `${format(left)} left` : `${format(total)} review`;
     chip.lastChild.textContent = text;
@@ -71,7 +81,12 @@
     chip.title = total
       ? `About ${format(total, true)} to review ${lines.toLocaleString()} changed lines${left < total ? `, ${format(left, true)} left` : ''}. Lockfiles, generated files and hidden groups don't count.`
       : 'Only lockfiles, generated files or hidden groups changed.';
-    if (chip.parentElement !== diffstat.parentElement || chip.previousElementSibling !== diffstat) diffstat.after(chip);
+    const latest = GH_TWEAKS_PR.headerDiffstat();
+    if (latest) place(latest);
+  }
+
+  function place(diffstat) {
+    if (chip.previousElementSibling !== diffstat) diffstat.after(chip);
   }
 
   // Viewed toggles on the Files changed page, which are newer than the JSON once you click them.
@@ -129,6 +144,17 @@
         font-variant-numeric: tabular-nums;
         cursor: default;
       }
+      .gh-tweaks-estimate[data-loading="true"] {
+        width: 80px;
+        height: 12px;
+        /* Keeps the chip's 20px footprint, so it lines up with the line count and nothing jumps when it loads. */
+        margin-block: 4px;
+        background: linear-gradient(90deg, var(--bgColor-neutral-muted, #818b981f) 25%, var(--bgColor-muted, #f6f8fa) 50%, var(--bgColor-neutral-muted, #818b981f) 75%) 0 0 / 200% 100%;
+        animation: gh-tweaks-estimate-shimmer 1.2s linear infinite;
+      }
+      .gh-tweaks-estimate[data-loading="true"] > * { visibility: hidden; }
+      @keyframes gh-tweaks-estimate-shimmer { to { background-position: -200% 0; } }
+      @media (prefers-reduced-motion: reduce) { .gh-tweaks-estimate[data-loading="true"] { animation: none; } }
       .gh-tweaks-estimate[data-done="true"] {
         background: var(--bgColor-success-muted, #dafbe1);
         color: var(--fgColor-success, #1a7f37);
