@@ -53,6 +53,8 @@ While the merge box at the bottom of a PR's Conversation tab is off screen, a ba
 
 Click anywhere on the bar to scroll to the merge box. The merge button scrolls there too and clicks GitHub's own merge button, so GitHub's usual confirm step still applies. It turns green only when everything has passed, and shows "Merging blocked" when GitHub offers no merge button.
 
+The bar casts a large shadow so it stands out from the timeline. Turn off **Shadow** under the merge bar switch in the popup for a flat bar.
+
 ### File triage
 
 On Files changed, chips under the file filter group the PR's files into Lockfiles, Generated, Tests, Docs, Config and Source. Only groups present in the PR appear. Click a chip to hide that group from both the file tree and the diff, and click it again to bring it back. Folders whose files are all hidden disappear too. Your choice is remembered across PRs.

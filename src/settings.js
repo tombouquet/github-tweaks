@@ -1,6 +1,8 @@
 // Every tweak can be turned off from the toolbar popup. Settings live in
-// chrome.storage.sync and default to on (and the first date format). Content scripts wait on
-// GH_TWEAKS_SETTINGS before starting, so a change applies on the next page load.
+// chrome.storage.sync and default to on (and the first date format). A tweak can
+// carry a `choice` dropdown or a `toggle` sub-switch, shown under its own switch.
+// Content scripts wait on GH_TWEAKS_SETTINGS before starting, so a change applies
+// on the next page load.
 
 // Formats for absolute dates, in local time. The first is the default.
 // Built by hand because Intl always puts a space before AM/PM.
@@ -36,7 +38,7 @@ globalThis.GH_TWEAKS_DATE_FORMATS = (() => {
 globalThis.GH_TWEAKS_FEATURES = [
   { group: 'Pull requests', key: 'lightbox', label: 'Image lightbox', description: 'Open PR images in a zoomable gallery.' },
   { group: 'Pull requests', key: 'reviewButton', label: 'Submit review and LGTM buttons', description: 'Open the review dialog, or approve with LGTM, from the Conversation tab.' },
-  { group: 'Pull requests', key: 'mergeBar', label: 'Sticky merge bar', description: 'Checks, reviews and the merge button, always in view.' },
+  { group: 'Pull requests', key: 'mergeBar', label: 'Sticky merge bar', description: 'Checks, reviews and the merge button, always in view.', toggle: { key: 'mergeBarShadow', label: 'Shadow' } },
   { group: 'Pull requests', key: 'fileTriage', label: 'File triage', description: 'Filter chips and review progress on Files changed.' },
   { group: 'Pull requests', key: 'markdownReview', label: 'Rich Markdown review', description: 'Comment on rendered Markdown blocks.' },
   { group: 'Repository files', key: 'fileIcons', label: 'File icons', description: 'VS Code-style icons in file lists and trees.' },
@@ -48,7 +50,7 @@ globalThis.GH_TWEAKS_FEATURES = [
 ];
 
 globalThis.GH_TWEAKS_SETTINGS = chrome.storage.sync.get({
-  ...Object.fromEntries(globalThis.GH_TWEAKS_FEATURES.map(({ key }) => [key, true])),
+  ...Object.fromEntries(globalThis.GH_TWEAKS_FEATURES.flatMap(({ key, toggle }) => [key, toggle?.key].filter(Boolean).map((k) => [k, true]))),
   dateFormat: globalThis.GH_TWEAKS_DATE_FORMATS[0].key,
 });
 
