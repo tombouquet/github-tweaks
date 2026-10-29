@@ -38,6 +38,7 @@
         "vendor/highlight.min.js",
         "src/repo-files.js",
         "src/merge-bar.js",
+        "src/friday.js",
         "src/md-review.js"
       ],
       "run_at": "document_idle",
