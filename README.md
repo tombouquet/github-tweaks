@@ -5,6 +5,7 @@ Chrome extension with a few fixes for GitHub:
 - **Image lightbox:** opens PR images in a zoomable gallery modal, instead of navigating to the raw image in a new tab.
 - **Submit review from Conversation:** a floating button on the Conversation tab that jumps to Files changed with the review dialog already open, plus an LGTM button that approves with an "LGTM" comment in one click.
 - **Sticky merge bar:** a bar at the bottom of the Conversation tab shows whether checks passed, reviews and conflicts, with the merge button, so you don't have to scroll to the bottom.
+- **Hide Checks tab:** removes the Checks tab from PRs, since the merge box already shows check results.
 - **Hide command line merge hint:** removes "You can also merge this with the command line" from beside the merge button.
 - **Review time estimate:** a "~12 min review" chip next to a PR's line count, skipping lockfiles and generated files and counting down as you mark files viewed.
 - **Friday merge warning:** on Fridays, an extra row in the merge card asks if you're sure, with a random message that gets more nervous as the day goes on.
@@ -58,6 +59,10 @@ Click anywhere on the bar to scroll to the merge box. The merge button scrolls t
 
 The bar casts a large shadow so it stands out from the timeline. Turn off **Shadow** under the merge bar switch in the popup for a flat bar.
 
+### Hide Checks tab
+
+A PR's tabs read Conversation, Commits, Files changed, with no Checks tab. Check results still show in the merge box and the sticky merge bar, and `/pull/:number/checks` still opens if you go there directly.
+
 ### Hide command line merge hint
 
 The "You can also merge this with the command line. View command line instructions." line beside GitHub's merge button is hidden. Turn the switch off to bring it back.
@@ -102,6 +107,7 @@ Content scripts run on `github.com`. The only permission is `storage`, for the p
 - `src/merge-bar.js` reads the section headings of GitHub's merge box (`[data-testid="mergebox-border-container"]`), re-reads them as the page updates, and hides the bar with an `IntersectionObserver` while the merge box is visible.
 - `src/pr-data.js` is shared by the PR header tweaks. It finds the PR in the URL and loads the JSON GitHub's own Files changed page renders from (`/pull/:number/changes` with `Accept: application/json`), cached for a minute: every changed file with its line counts and viewed state, plus the head commit and the commit you last reviewed.
 - `src/review-estimate.js` weighs each file from that JSON by its File triage group, and reads the Viewed toggles on the page for anything you've marked since it loaded.
+- `src/hide-checks-tab.js` hides the `/checks` link in the PR's tab bar with CSS.
 - `src/merge-hint.js` hides the muted line in the merge box that holds the "View command line instructions" link.
 - `src/friday.js` checks the local day and hour on each page update and adds its row to the merge card (`[data-testid="mergebox-border-container"]`) just before the footer holding the merge button.
 - `src/md-review.js` reads each Markdown file's source diff lines before switching it to rich, then matches each rendered block to its lines by comparing letters and digits only. Commenting drives GitHub's own line selection and "Add comment" button.
