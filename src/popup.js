@@ -25,14 +25,16 @@
       }
       const toggle = row(feature, settings[feature.key]);
       box.append(toggle);
-      if (feature.choice) {
-        const select = choiceRow(feature.choice, settings[feature.choice.key]);
-        box.append(select.parentElement);
-        // The dropdown only matters while its tweak is on.
+      const sub = feature.choice
+        ? choiceRow(feature.choice, settings[feature.choice.key])
+        : feature.toggle && subSwitchRow(feature.toggle, settings[feature.toggle.key]);
+      if (sub) {
+        box.append(sub.parentElement);
+        // The dropdown or sub-switch only matters while its tweak is on.
         const input = toggle.querySelector('input');
-        select.disabled = !input.checked;
+        sub.disabled = !input.checked;
         input.addEventListener('change', () => {
-          select.disabled = !input.checked;
+          sub.disabled = !input.checked;
         });
       }
     }
@@ -56,6 +58,27 @@
     });
     row.append(text, input);
     return row;
+  }
+
+  // A secondary switch under a tweak's switch, laid out like a dropdown row.
+  function subSwitchRow({ key, label, description }, checked) {
+    const row = document.createElement('label');
+    row.className = 'row choice';
+    const text = document.createElement('span');
+    text.className = 'text';
+    text.innerHTML = '<span class="label"></span><span class="description"></span>';
+    text.firstChild.textContent = label;
+    text.lastChild.textContent = description;
+    const input = document.createElement('input');
+    input.type = 'checkbox';
+    input.setAttribute('role', 'switch');
+    input.checked = checked;
+    input.addEventListener('change', () => {
+      chrome.storage.sync.set({ [key]: input.checked });
+      flash.hidden = false;
+    });
+    row.append(text, input);
+    return input;
   }
 
   // A dropdown row under a switch. Each option shows the current time in that

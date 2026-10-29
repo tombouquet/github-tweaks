@@ -300,6 +300,7 @@
       @media (max-width: 1011px) {
         html:has(.gh-tweaks-merge-bar:not(.gh-tweaks-merge-hidden)) .gh-tweaks-review-actions { bottom: 88px; }
       }
+      ${shadow ? '' : '.gh-tweaks-merge-bar { box-shadow: none; }'}
     `;
     document.documentElement.append(style);
   }
