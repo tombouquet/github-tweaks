@@ -36,7 +36,7 @@ globalThis.GH_TWEAKS_DATE_FORMATS = (() => {
   ];
 })();
 
-// File groups for File triage and the review time estimate, by path.
+// File groups for File triage, by path.
 // First match wins, so the specific buckets come before the catch-all ones.
 globalThis.GH_TWEAKS_FILE_CATEGORIES = [
   ['Lockfiles', /(^|\/)(package-lock\.json|npm-shrinkwrap\.json|yarn\.lock|pnpm-lock\.yaml|bun\.lockb?|Cargo\.lock|Gemfile\.lock|poetry\.lock|uv\.lock|Pipfile\.lock|composer\.lock|go\.sum|flake\.lock|Podfile\.lock|packages\.lock\.json)$/],
@@ -62,7 +62,6 @@ globalThis.GH_TWEAKS_FEATURES = [
   { group: 'Pull requests', key: 'reviewButton', label: 'Submit review and LGTM buttons', description: 'Open the review dialog, or approve with LGTM, from the Conversation tab.' },
   { group: 'Pull requests', key: 'mergeBar', label: 'Sticky merge bar', description: 'Checks, reviews and the merge button, always in view.', toggle: { key: 'mergeBarShadow', label: 'Shadow', description: 'Glow that lifts the bar off the page.' } },
   { group: 'Pull requests', key: 'sinceReview', label: 'Changes since your review', description: 'A header button showing only what was pushed since you last reviewed.' },
-  { group: 'Pull requests', key: 'reviewEstimate', label: 'Review time estimate', description: 'How long a PR takes to review, counting down as you go.' },
   { group: 'Pull requests', key: 'fileTriage', label: 'File triage', description: 'Filter chips and review progress on Files changed.' },
   { group: 'Pull requests', key: 'notifyReady', label: 'Notify when ready', description: 'A desktop notification when an open PR is ready to merge or starts failing.' },
   { group: 'Pull requests', key: 'hideChecksTab', label: 'Hide Checks tab', description: 'Drop the Checks tab from PRs; checks still show in the merge box.' },

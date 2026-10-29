@@ -1,6 +1,6 @@
 // Shared by the tweaks in a PR's header: which PR the page is on, GitHub's own
-// JSON for its Files changed page (files, line counts, viewed state, your last
-// review) and the header spots they add their buttons to.
+// JSON for its Files changed page (commits and your last review) and the
+// header spot they add their buttons to.
 globalThis.GH_TWEAKS_PR = (() => {
   const PR_PATH = /^\/([^/]+)\/([^/]+)\/pull\/(\d+)(?=\/|$)/;
   // Long enough to share one request between tweaks, short enough to pick up new pushes.
@@ -60,13 +60,5 @@ globalThis.GH_TWEAKS_PR = (() => {
     return true;
   }
 
-  // The "+30 −4" line count next to the PR's tabs.
-  function headerDiffstat() {
-    const label = [...document.querySelectorAll('[data-component="PH_Navigation"] .sr-only')].find((element) =>
-      element.textContent.startsWith('Lines changed'),
-    );
-    return label?.parentElement ?? null;
-  }
-
-  return { current, changes, headerActions, headerButton, placeBeforeCode, headerDiffstat };
+  return { current, changes, headerActions, headerButton, placeBeforeCode };
 })();

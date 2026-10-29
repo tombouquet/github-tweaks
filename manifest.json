@@ -55,7 +55,6 @@
         "src/merge-hint.js",
         "src/hide-checks-tab.js",
         "src/friday.js",
-        "src/review-estimate.js",
         "src/since-review.js",
         "src/claude-code.js",
         "src/md-review.js"
