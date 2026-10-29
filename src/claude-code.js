@@ -56,8 +56,9 @@
   function deepLink({ owner, repo, number }) {
     const url = `${location.origin}/${owner}/${repo}/pull/${number}`;
     const title = document.querySelector('h1 .markdown-title')?.textContent.trim() || `PR #${number}`;
-    const template = (GH_TWEAKS_CLAUDE_PROMPTS.find((option) => option.key === settings.claudePrompt) ?? GH_TWEAKS_CLAUDE_PROMPTS[0]).prompt;
-    const prompt = template.replaceAll('{n}', number).replaceAll('{title}', title).replaceAll('{url}', url).slice(0, MAX_PROMPT);
+    const prompts = settings.claudePrompts?.length ? settings.claudePrompts : GH_TWEAKS_CLAUDE_PROMPTS;
+    const template = (prompts.find((option) => option.key === settings.claudePrompt) ?? prompts[0]).prompt ?? '';
+    const prompt = template.replaceAll('{n}', number).replaceAll('{title}', title).replaceAll('{url}', url).replaceAll('{repo}', `${owner}/${repo}`).slice(0, MAX_PROMPT);
     const params = new URLSearchParams({ repo: `${owner}/${repo}` });
     if (prompt) params.set('q', prompt);
     // URLSearchParams writes spaces as "+", which the deep link would keep literally.

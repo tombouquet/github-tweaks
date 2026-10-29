@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>GitHub Tweaks · Claude Code prompts</title>
+<style>
+  /* Primer colour tokens, light and dark, matching the popup. */
+  :root {
+    color-scheme: light dark;
+    --fg: #1f2328;
+    --fg-muted: #59636e;
+    --bg: #ffffff;
+    --bg-muted: #f6f8fa;
+    --border: #d1d9e0;
+    --accent: #0969da;
+    --danger: #d1242f;
+    --button-bg: #f6f8fa;
+    --button-hover: #eff2f5;
+    --primary: #1f883d;
+    --primary-hover: #1c8139;
+    --success: #1a7f37;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --fg: #f0f6fc;
+      --fg-muted: #9198a1;
+      --bg: #0d1117;
+      --bg-muted: #151b23;
+      --border: #3d444d;
+      --accent: #4493f8;
+      --danger: #f85149;
+      --button-bg: #212830;
+      --button-hover: #262c36;
+      --primary: #238636;
+      --primary-hover: #29903b;
+      --success: #3fb950;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 32px 24px 64px;
+    background: var(--bg);
+    color: var(--fg);
+    font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
+  }
+  header { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+  header img { width: 32px; height: 32px; }
+  h1 { margin: 0; font-size: 24px; font-weight: 600; }
+  .intro { margin: 0 0 24px; color: var(--fg-muted); }
+  code { padding: 1px 5px; border-radius: 4px; background: var(--bg-muted); font: 12px ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .prompt {
+    margin-bottom: 16px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .prompt.default { border-color: var(--accent); }
+  .prompt-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-muted);
+  }
+  .prompt-head input[type="text"] {
+    flex: 1;
+    min-width: 0;
+    padding: 4px 8px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-weight: 600;
+  }
+  .prompt-head input[type="text"]:hover, .prompt-head input[type="text"]:focus { border-color: var(--border); background: var(--bg); outline: none; }
+  .default-label { display: flex; align-items: center; gap: 4px; color: var(--fg-muted); font-size: 12px; white-space: nowrap; cursor: pointer; }
+  .prompt.default .default-label { color: var(--accent); font-weight: 600; }
+  textarea {
+    display: block;
+    width: 100%;
+    min-height: 96px;
+    padding: 12px;
+    border: 0;
+    background: var(--bg);
+    color: inherit;
+    font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+    resize: vertical;
+    outline: none;
+  }
+  .prompt-foot { display: flex; justify-content: flex-end; padding: 4px 12px 8px; color: var(--fg-muted); font-size: 12px; }
+  .prompt-foot.over { color: var(--danger); }
+  button {
+    padding: 3px 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--button-bg);
+    color: var(--fg);
+    font: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 20px;
+    cursor: pointer;
+  }
+  button:hover:not(:disabled) { background: var(--button-hover); }
+  button:disabled { opacity: 0.4; cursor: not-allowed; }
+  button.icon { padding: 3px 8px; }
+  button.danger { color: var(--danger); }
+  button.primary { border-color: transparent; background: var(--primary); color: #fff; }
+  button.primary:hover { background: var(--primary-hover); }
+  .actions { display: flex; align-items: center; gap: 8px; }
+  .status { margin-left: auto; color: var(--fg-muted); font-size: 12px; }
+  .status.error { color: var(--danger); }
+  .status.saved { color: var(--success); }
+</style>
+</head>
+<body>
+<header>
+  <img src="images/icon-48.png" alt="">
+  <h1>Claude Code prompts</h1>
+</header>
+<p class="intro">
+  The prompts the <strong>Claude Code</strong> button on a PR can type in for you. The default is used when you click the button; pick another under the switch in the toolbar popup.
+  These get filled in from the PR: <code>{n}</code> number, <code>{title}</code> title, <code>{url}</code> link, <code>{repo}</code> owner/name.
+  Leave a prompt empty to just open the repo. Changes save as you type.
+</p>
+<main id="prompts"></main>
+<div class="actions">
+  <button type="button" class="primary" id="add">Add prompt</button>
+  <button type="button" id="reset">Reset to built-in prompts</button>
+  <span class="status" id="status" role="status"></span>
+</div>
+<script src="src/settings.js"></script>
+<script src="src/options.js"></script>
+</body>
+</html>

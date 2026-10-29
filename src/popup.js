@@ -26,7 +26,7 @@
       const toggle = row(feature, settings[feature.key]);
       box.append(toggle);
       const sub = feature.choice
-        ? choiceRow(feature.choice, settings[feature.choice.key])
+        ? choiceRow(feature.choice, settings[feature.choice.key], settings[feature.choice.optionsKey])
         : feature.toggle && subSwitchRow(feature.toggle, settings[feature.toggle.key]);
       if (sub) {
         box.append(sub.parentElement);
@@ -83,7 +83,8 @@
 
   // A dropdown row under a switch. Options have a `label`, or a `format` that shows
   // the current time in that date format, so the list doubles as a preview.
-  function choiceRow({ key, label, options }, value) {
+  function choiceRow({ key, label, options: builtIn, editLabel }, value, saved) {
+    const options = saved?.length ? saved : builtIn;
     const row = document.createElement('label');
     row.className = 'row choice';
     const text = document.createElement('span');
@@ -98,6 +99,18 @@
       chrome.storage.sync.set({ [key]: select.value });
       flash.hidden = false;
     });
+    // Editable lists get a link under the label to the options page, where there's room to edit them.
+    if (editLabel) {
+      const edit = document.createElement('button');
+      edit.type = 'button';
+      edit.className = 'link';
+      edit.textContent = editLabel;
+      edit.addEventListener('click', (event) => {
+        event.preventDefault();
+        chrome.runtime.openOptionsPage();
+      });
+      text.append(edit);
+    }
     row.append(text, select);
     return select;
   }

@@ -61,6 +61,8 @@ On a PR, the Code dropdown at the top right is replaced by a **Claude Code** but
 - **Check out the branch**: just `gh pr checkout`.
 - **Open the repo, no prompt**.
 
+To change these, click **Edit prompts…** under the dropdown. It opens a settings page where you can rename and rewrite each prompt, add your own, reorder or delete them, pick the default, or reset to the built-in ones. `{n}`, `{title}`, `{url}` and `{repo}` are filled in from the PR, and an empty prompt just opens the repo. Changes save as you type and sync with your other settings.
+
 Claude Code finds your clone from the repo's `owner/name`, so run `claude` in that clone at least once first; otherwise it opens in your home directory. The link only works once Claude Code has registered its `claude-cli://` handler, which happens the first time you send a prompt in an interactive session. Your browser asks before opening it the first time. Turn the switch off to get the Code dropdown back.
 
 ### Submit review
@@ -153,7 +155,8 @@ Content scripts run on `github.com`. The permissions are `storage`, for the popu
 - `src/merge-status.js` reads the section headings of GitHub's merge box (`[data-testid="mergebox-border-container"]`) into statuses for checks, review and conflicts. `src/merge-bar.js` re-reads them as the page updates and hides the bar with an `IntersectionObserver` while the merge box is visible.
 - `src/notify-ready.js` watches the same statuses and messages `src/background.js`, the extension's service worker, which shows the notification with `chrome.notifications` and focuses the PR's tab when it's clicked.
 - `src/pr-data.js` is shared by the PR header tweaks. It finds the PR in the URL and loads the JSON GitHub's own Files changed page renders from (`/pull/:number/changes` with `Accept: application/json`), cached for a minute: every changed file with its line counts and viewed state, plus the head commit and the commit you last reviewed.
-- `src/claude-code.js` builds `claude-cli://open?repo=owner/name&q=<prompt>` from the PR's number, title and URL, using the prompts in `GH_TWEAKS_CLAUDE_PROMPTS` (`src/settings.js`), and hides GitHub's Code button. The Claude logo is from [Simple Icons](https://simpleicons.org) (CC0).
+- `options.html` and `src/options.js` edit the Claude Code prompts, saved as `claudePrompts` in `chrome.storage.sync`. The popup's dropdown and the button read the same list.
+- `src/claude-code.js` builds `claude-cli://open?repo=owner/name&q=<prompt>` from the PR's number, title and URL, using your saved prompts, or the built-in ones in `GH_TWEAKS_CLAUDE_PROMPTS` (`src/settings.js`), and hides GitHub's Code button. The Claude logo is from [Simple Icons](https://simpleicons.org) (CC0).
 - `src/since-review.js` links to `/pull/:number/changes/<last reviewed>..<head>` using the commits from that JSON. Its button copies the classes of GitHub's Code button so it matches the header.
 - `src/review-estimate.js` weighs each file from that JSON by its File triage group, and reads the Viewed toggles on the page for anything you've marked since it loaded.
 - `src/hide-checks-tab.js` hides the `/checks` link in the PR's tab bar with CSS.
