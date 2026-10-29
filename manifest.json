@@ -30,7 +30,7 @@
       "128": "images/icon-128.png"
     }
   },
-  "description": "PR image lightbox, Submit review and LGTM buttons, an Open in Claude Code button, changes since your last review, a sticky merge bar with ready-to-merge notifications and a Friday warning, file-type filters with review progress, and Markdown as a commentable rich diff. In repos: Cmd/Ctrl+K jump to file, a README contents sidebar, the Markdown outline open by default, file icons, image thumbnails, downloads and quick view. Absolute dates everywhere, and Copilot buttons and the Checks tab hidden.",
+  "description": "Small fixes and extras for GitHub pull requests and repos.",
   "content_scripts": [
     {
       "matches": [
