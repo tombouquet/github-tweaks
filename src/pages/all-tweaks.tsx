@@ -32,7 +32,7 @@ const Keys = ({ keys }: { keys: string[] }) => (
 const DETAILS: Record<FeatureKey, React.ReactNode> = {
   lightbox: 'Click any image in a PR description or comment to open every image in the PR as a gallery. Zoom with the scroll wheel or pinch, drag to pan, and use the arrow keys to move between images.',
   claudeCode: 'The Code dropdown at the top right of a PR becomes a Claude Code button. It opens Claude Code in your local clone with a prompt about the PR typed in, ready to send. Pick the prompt below, or edit them with the cog.',
-  reviewButton: 'Floating buttons at the bottom right of the Conversation tab. Submit review opens Files changed with the review dialog open; LGTM approves with an "LGTM" comment and throws confetti. LGTM hides on your own PRs.',
+  reviewButton: 'Floating buttons at the bottom right of a PR\'s Conversation, Commits and Files changed tabs. Submit review opens the review dialog, switching to Files changed if needed; LGTM approves with an "LGTM" comment and throws confetti. LGTM hides on your own PRs.',
   mergeBar: "While the merge box is off screen, a bar floats over the timeline with the PR's most important blocker, its other statuses and the merge button. Click it to jump to the merge box.",
   sinceReview: 'When commits have been pushed since your last review, a "2 new commits" button appears in the PR header. It opens Files changed with only those commits.',
   fileTriage: "Chips above the Files changed file tree hide lockfiles, generated files, tests, docs, config or source, with a progress bar of the files you've marked viewed.",

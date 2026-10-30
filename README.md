@@ -4,7 +4,7 @@ Chrome extension with a few fixes for GitHub:
 
 - **Image lightbox:** opens PR images in a zoomable gallery modal, instead of navigating to the raw image in a new tab.
 - **Open in Claude Code:** the Code dropdown in a PR's header becomes a Claude Code button that opens the PR in Claude Code with a prompt ready to send.
-- **Submit review from Conversation:** a floating button on the Conversation tab that jumps to Files changed with the review dialog already open, plus an LGTM button that approves with an "LGTM" comment in one click.
+- **Submit review from any tab:** a floating button on a PR's Conversation, Commits and Files changed tabs that opens the review dialog, switching to Files changed if needed, plus an LGTM button that approves with an "LGTM" comment in one click.
 - **Sticky merge bar:** a bar at the bottom of the Conversation tab shows whether checks passed, reviews and conflicts, with the merge button, so you don't have to scroll to the bottom.
 - **Notify when ready:** a desktop notification when a PR you have open becomes ready to merge or starts failing, and a ✅ or ❌ in its tab title.
 - **Hide Checks tab:** removes the Checks tab from PRs, since the merge box already shows check results.
@@ -106,7 +106,7 @@ Claude Code finds your clone from the repo's `owner/name`, so run `claude` in th
 
 ### Submit review
 
-When you're signed in, a **Submit review** button floats at the bottom right of a PR's Conversation tab. Clicking it opens Files changed with GitHub's review dialog already open. Next to it, **LGTM** does the same, then fills in "LGTM", picks Approve and submits the review, then throws confetti when GitHub brings you back to the Conversation tab ([confetti.js](https://confettijs.org/)). LGTM is hidden on your own PRs, since GitHub doesn't let you approve them. If Approve still isn't available, it stops with the dialog open.
+When you're signed in, a **Submit review** button floats at the bottom right of a PR's Conversation, Commits and Files changed tabs. Clicking it opens GitHub's review dialog: on Files changed it opens in place, keeping any commit you're viewing, and from the other tabs it switches to Files changed first. Next to it, **LGTM** does the same, then fills in "LGTM", picks Approve and submits the review, then throws confetti when GitHub brings you back to the Conversation tab ([confetti.js](https://confettijs.org/)). LGTM is hidden on your own PRs, since GitHub doesn't let you approve them. If Approve still isn't available, it stops with the dialog open.
 
 ### Sticky merge bar
 
@@ -192,7 +192,7 @@ One content script runs on `github.com`: `src/entrypoints/github.content/index.t
 
 - `src/lib/settings.ts` lists the tweaks and loads their on/off state from `chrome.storage.sync` (default on). The popup and All tweaks page build their switches from the same list.
 - `src/features/lightbox.ts` intercepts clicks on `.markdown-body img` when the URL is a PR (`/:owner/:repo/pull/:number`) and renders the viewer inside a Shadow DOM, so GitHub's styles don't leak in.
-- `src/features/pr-review.ts` throws confetti after an LGTM with a bundled copy of [confetti.js](https://confettijs.org) (`src/vendor/`, ISC). It watches the page with a `MutationObserver` and targets GitHub's new React PR pages (`/pull/:number` and `/pull/:number/changes`). Files are grouped by path patterns, listed in `FILE_CATEGORIES` in `src/lib/settings.ts`. The classic signed-out `/files` page is left alone.
+- `src/features/pr-review.ts` throws confetti after an LGTM with a bundled copy of [confetti.js](https://confettijs.org) (`src/vendor/`, ISC). It watches the page with a `MutationObserver` and targets GitHub's new React PR pages (`/pull/:number`, `/pull/:number/commits` and `/pull/:number/changes`). Files are grouped by path patterns, listed in `FILE_CATEGORIES` in `src/lib/settings.ts`. The classic signed-out `/files` page is left alone.
 - `src/features/absolute-dates.ts` switches GitHub's `<relative-time>` elements to absolute mode, then writes the formatted text into each one, re-applying it if GitHub re-renders. The formats live in `src/lib/settings.ts` so the popup can preview them, and are built by hand because `Intl` always puts a space before AM/PM.
 - `src/lib/merge-status.ts` reads the section headings of GitHub's merge box (`[data-testid="mergebox-border-container"]`) into statuses for checks, review and conflicts. `src/features/merge-bar.ts` re-reads them as the page updates and hides the bar with an `IntersectionObserver` while the merge box is visible.
 - `src/features/notify-ready.ts` watches the same statuses and messages `src/entrypoints/background.ts`, the extension's service worker, which shows the notification with `chrome.notifications` and focuses the PR's tab when it's clicked. The worker also runs the update check (`src/lib/updates.ts`).

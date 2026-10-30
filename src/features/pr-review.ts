@@ -1,11 +1,14 @@
 import '@/vendor/confetti.js';
 import { batched } from '@/lib/schedule';
+import { currentPr } from '@/lib/pr-data';
 import { FILE_CATEGORIES, type Settings } from '@/lib/settings';
 
 // Targets GitHub's React PR pages (signed-in: Conversation at /pull/N, files at /pull/N/changes).
 // The classic /files page (signed-out) is left alone.
 const CONVERSATION_PATH = /^\/[^/]+\/[^/]+\/pull\/\d+\/?$/;
 const CHANGES_PATH = /^\/[^/]+\/[^/]+\/pull\/\d+\/changes/;
+// Conversation, Commits and Files changed: the tabs the review buttons float on.
+const REVIEW_TABS_PATH = /^\/[^/]+\/[^/]+\/pull\/\d+(\/(commits|changes)(\/.*)?)?\/?$/;
 const OPEN_REVIEW_KEY = 'gh-tweaks-open-review';
 const CELEBRATE_KEY = 'gh-tweaks-celebrate';
 const HIDDEN_KEY = 'gh-tweaks-hidden-categories';
@@ -37,7 +40,7 @@ export function prReview(loaded: Settings): void {
 
 function update(): void {
   const path = location.pathname;
-  if (settings.reviewButton) updateReviewButton(CONVERSATION_PATH.test(path) && isSignedIn());
+  if (settings.reviewButton) updateReviewButton(REVIEW_TABS_PATH.test(path) && isSignedIn());
   if (settings.reviewButton && CONVERSATION_PATH.test(path)) celebratePendingLgtm();
   if (CHANGES_PATH.test(path)) {
     if (settings.reviewButton) openPendingReview();
@@ -70,7 +73,7 @@ function prAuthor(): string {
   return '';
 }
 
-// --- Review button on the Conversation tab --------------------------------
+// --- Review buttons on the Conversation, Commits and Files changed tabs -----
 
 const LGTM = 'lgtm';
 let reviewActions: HTMLDivElement | null = null;
@@ -95,7 +98,7 @@ function updateReviewButton(show: boolean): void {
     const review = createReviewButton(
       'gh-tweaks-review-button',
       '<svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M1.75 1h12.5c.966 0 1.75.784 1.75 1.75v8.5A1.75 1.75 0 0 1 14.25 13H8.061l-2.574 2.573A1.458 1.458 0 0 1 3 14.543V13H1.75A1.75 1.75 0 0 1 0 11.25v-8.5C0 1.784.784 1 1.75 1ZM1.5 2.75v8.5c0 .138.112.25.25.25h2a.75.75 0 0 1 .75.75v2.19l2.72-2.72a.749.749 0 0 1 .53-.22h6.5a.25.25 0 0 0 .25-.25v-8.5a.25.25 0 0 0-.25-.25H1.75a.25.25 0 0 0-.25.25Zm5.28 1.72a.75.75 0 0 1 0 1.06L5.31 7l1.47 1.47a.751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018l-2-2a.75.75 0 0 1 0-1.06l2-2a.75.75 0 0 1 1.06 0Zm2.44 0a.75.75 0 0 1 1.06 0l2 2a.75.75 0 0 1 0 1.06l-2 2a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L10.69 7 9.22 5.53a.75.75 0 0 1 0-1.06Z"/></svg><span>Submit review</span>',
-      'Open the review dialog on the Files changed tab',
+      'Open the review dialog',
       '1',
     );
     reviewActions.append(lgtmButton, review);
@@ -115,7 +118,9 @@ function createReviewButton(className: string, html: string, title: string, mode
   button.title = title;
   button.addEventListener('click', () => {
     sessionStorage.setItem(OPEN_REVIEW_KEY, mode);
-    location.assign(`${location.pathname.replace(/\/$/, '')}/changes`);
+    // Already on Files changed: open the dialog here, keeping any commit range in view.
+    if (CHANGES_PATH.test(location.pathname)) openPendingReview();
+    else location.assign(`${currentPr()?.base ?? location.pathname.replace(/\/$/, '')}/changes`);
   });
   return button;
 }
