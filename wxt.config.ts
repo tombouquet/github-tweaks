@@ -13,7 +13,8 @@ export default defineConfig({
     permissions: ['storage', 'notifications', 'alarms'],
     action: { default_title: 'GitHub Tweaks' },
     options_page: 'app.html#/prompts',
-    // The file icons, shown by the content script in GitHub's file lists.
-    web_accessible_resources: [{ resources: ['icons/*.svg'], matches: ['https://github.com/*'] }],
+    // The file icons, shown by the content script in GitHub's file lists, and the PDF
+    // preview frame, which GitHub's CSP would block as a blob: frame.
+    web_accessible_resources: [{ resources: ['icons/*.svg', 'pdf.html'], matches: ['https://github.com/*'] }],
   },
 });

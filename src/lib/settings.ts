@@ -89,6 +89,7 @@ export type FeatureKey =
   | 'hideMergeHint'
   | 'fridayWarning'
   | 'markdownReview'
+  | 'pdfPreview'
   | 'jumpToFile'
   | 'readmeToc'
   | 'markdownOutline'
@@ -145,6 +146,7 @@ export const FEATURES: Feature[] = [
   { group: 'Pull requests', key: 'hideMergeHint', label: 'Hide command line merge hint', description: 'Drop "You can also merge this with the command line" from the merge box.' },
   { group: 'Pull requests', key: 'fridayWarning', label: 'Friday merge warning', description: 'A worried note above the merge button on Fridays.' },
   { group: 'Pull requests', key: 'markdownReview', label: 'Rich Markdown review', description: 'Comment on rendered Markdown blocks.' },
+  { group: 'Pull requests', key: 'pdfPreview', label: 'PDFs render inline', description: 'Preview changed PDFs on Files changed instead of "Binary file not shown."' },
   { group: 'Repository files', key: 'jumpToFile', label: 'Jump to file', description: 'Cmd/Ctrl+K in any repo to fuzzy-find a file.' },
   { group: 'Repository files', key: 'readmeToc', label: 'README contents', description: "A sticky outline of the README in the repo's sidebar." },
   { group: 'Repository files', key: 'markdownOutline', label: 'Open Markdown outline', description: "Show a Markdown file's outline by default; close it to keep it closed." },

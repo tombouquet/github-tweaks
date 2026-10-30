@@ -41,6 +41,7 @@ const DETAILS: Record<FeatureKey, React.ReactNode> = {
   hideMergeHint: 'Removes "You can also merge this with the command line" from beside the merge button.',
   fridayWarning: 'On Fridays, a row in the merge card asks if you really want to merge, with a random message that gets more worried as the day goes on.',
   markdownReview: 'Markdown files on Files changed open as rendered diffs. Select paragraphs, list items or table rows and click + to comment on their source lines.',
+  pdfPreview: 'PDF files that GitHub shows as "Binary file not shown." are replaced with an inline preview of the new version, plus a link to open it in a tab. Private repositories included.',
   jumpToFile: (
     <>
       Press <Keys keys={['Cmd/Ctrl', 'K']} /> anywhere in a repo to fuzzy-find any file. <Keys keys={['Enter']} /> opens it, <Keys keys={['Cmd/Ctrl', 'Enter']} /> opens a new tab, <Keys keys={['Shift', 'Enter']} /> previews it in Quick view.
