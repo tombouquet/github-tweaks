@@ -11,6 +11,7 @@ import { markdownOutline } from '@/features/md-outline';
 import { markdownReview } from '@/features/md-review';
 import { mergeBar } from '@/features/merge-bar';
 import { notifyReady } from '@/features/notify-ready';
+import { pdfPreview } from '@/features/pdf-preview';
 import { prReview } from '@/features/pr-review';
 import { readmeToc } from '@/features/readme-toc';
 import { repoFiles } from '@/features/repo-files';
@@ -35,6 +36,7 @@ const TWEAKS: ((settings: Settings) => void)[] = [
   sinceReview,
   claudeCode,
   markdownReview,
+  pdfPreview,
 ];
 
 export default defineContentScript({

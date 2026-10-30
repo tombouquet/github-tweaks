@@ -13,6 +13,7 @@ Chrome extension with a few fixes for GitHub:
 - **Friday merge warning:** on Fridays, an extra row in the merge card asks if you're sure, with a random message that gets more nervous as the day goes on.
 - **File triage:** filter chips above the file tree that hide lockfiles, generated files, tests, docs, config or source, with a review progress bar that counts only the files still shown.
 - **Rich Markdown review:** Markdown files on Files changed open as rich diffs, and you can select rendered paragraphs, list items or table rows to comment on their source lines.
+- **PDFs render inline:** PDF files that GitHub shows as "Binary file not shown." are replaced with an inline preview of the new version, plus a link to open it in a tab. Private repositories included.
 - **No Copilot:** Copilot buttons (header chat, Copilot panel, "Ask about this diff") and the Agents tab are hidden.
 - **Absolute dates:** every timestamp on github.com shows the real time and date, such as `4:29PM Oct 16, 2026`, instead of "last week".
 - **Jump to file:** press Cmd/Ctrl+K anywhere in a repo to fuzzy-find any file and open it or preview it in Quick view.
@@ -151,6 +152,10 @@ On a PR's Files changed tab, `.md`, `.mdx` and `.markdown` files switch to the r
 
 Quick view in repo file lists shows Markdown rendered too.
 
+### PDFs render inline
+
+PDF files that GitHub shows as "Binary file not shown." are replaced with an inline preview of the new version, plus a link to open it in a tab. Private repositories included. This works on a PR's Files changed tab, including single-commit and commit-range views, and on commit pages. Deleted PDFs have no new version, so they keep GitHub's note.
+
 ### Absolute dates
 
 Timestamps on every GitHub page (repo home, file lists, commits, PRs, issues, Actions, releases) show `4:29PM Oct 16, 2026` in your local time zone by default. Pick another format, such as `Oct 16, 2026 4:29PM`, `YYYY-MM-DD HH:mm` or date only, from the dropdown under Absolute dates in the popup. Hovering still shows GitHub's full tooltip. Durations, such as how long an Actions run took, are left as they are.
@@ -200,6 +205,7 @@ One content script runs on `github.com`: `src/entrypoints/github.content/index.t
 - `src/features/merge-hint.ts` hides the muted line in the merge box that holds the "View command line instructions" link.
 - `src/features/friday.ts` checks the local day and hour on each page update and adds its row to the merge card (`[data-testid="mergebox-border-container"]`) just before the footer holding the merge button.
 - `src/features/md-review.ts` reads each Markdown file's source diff lines before switching it to rich, then matches each rendered block to its lines by comparing letters and digits only. Commenting drives GitHub's own line selection and "Add comment" button.
+- `src/features/pdf-preview.ts` fetches each PDF from `/:owner/:repo/raw/:oid/:path` with your GitHub session, so private repos work, at the PR's head commit (or the commit in the URL). GitHub's CSP blocks `blob:` frames and `<embed>`, so it frames `src/entrypoints/pdf/`, a web-accessible extension page, and posts it the PDF, which it shows in Chrome's PDF viewer.
 - `src/entrypoints/github.content/hide-copilot.css` hides anything with a Copilot icon, plus the Agents tab.
 - `src/features/repo-files.ts` swaps GitHub's file octicons for icons from `public/icons/`, chosen by `src/lib/file-icons-data.json`. Both are generated from the `material-icon-theme` npm package by `scripts/vendor-icons.mjs` (icons are MIT, see `public/icons/LICENSE`). Thumbnails load from `/raw/`. Folder downloads read GitHub's tree JSON and build an uncompressed ZIP in the page. Quick view highlights with [highlight.js](https://highlightjs.org) (BSD-3-Clause), coloured with GitHub's `--color-prettylights-syntax-*` variables so it follows your theme.
 - `src/features/jump-to-file.ts` loads every path in one request from `/:owner/:repo/tree-list/:commit`, the endpoint GitHub's own file finder uses, after looking up the branch's commit in its tree JSON. Icons and Quick view come from `src/features/repo-files.ts`.
