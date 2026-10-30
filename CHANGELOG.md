@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.11.2](https://github.com/tombouquet/github-tweaks/compare/v1.11.1...v1.11.2) (2026-10-29)
+
+
+### Bug Fixes
+
+* hide the Friday merge warning on merged and closed PRs ([a5efe20](https://github.com/tombouquet/github-tweaks/commit/a5efe207e9b88a28eff8150918a210e663db2e8a))
+* hide the Friday merge warning on merged and closed PRs ([ea3677f](https://github.com/tombouquet/github-tweaks/commit/ea3677f8c7833bc7592c430e6bd7e2b658d31459))
+
 ## [1.11.1](https://github.com/tombouquet/github-tweaks/compare/v1.11.0...v1.11.1) (2026-10-29)
 
 
