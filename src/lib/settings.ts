@@ -137,7 +137,7 @@ export interface Feature {
 export const FEATURES: Feature[] = [
   { group: 'Pull requests', key: 'lightbox', label: 'Image lightbox', description: 'Open PR images in a zoomable gallery.' },
   { group: 'Pull requests', key: 'claudeCode', label: 'Open in Claude Code', description: 'Swap the Code dropdown for a button that opens the PR in Claude Code.', choice: { key: 'claudePrompt', label: 'Prompt', options: CLAUDE_PROMPTS, optionsKey: 'claudePrompts', editLabel: 'Edit prompts…' } },
-  { group: 'Pull requests', key: 'reviewButton', label: 'Submit review and LGTM buttons', description: 'Open the review dialog, or approve with LGTM, from the Conversation tab.' },
+  { group: 'Pull requests', key: 'reviewButton', label: 'Submit review and LGTM buttons', description: 'Open the review dialog, or approve with LGTM, from any PR tab.' },
   { group: 'Pull requests', key: 'mergeBar', label: 'Sticky merge bar', description: 'Checks, reviews and the merge button, always in view.', toggle: { key: 'mergeBarShadow', label: 'Shadow', description: 'Glow that lifts the bar off the page.' } },
   { group: 'Pull requests', key: 'sinceReview', label: 'Changes since your review', description: 'A header button showing only what was pushed since you last reviewed.' },
   { group: 'Pull requests', key: 'fileTriage', label: 'File triage', description: 'Filter chips and review progress on Files changed.' },
