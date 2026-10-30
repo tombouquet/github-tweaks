@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.12.0](https://github.com/tombouquet/github-tweaks/compare/v1.11.2...v1.12.0) (2026-10-30)
+
+
+### Features
+
+* render PDFs inline on Files changed ([#13](https://github.com/tombouquet/github-tweaks/issues/13)) ([9329aef](https://github.com/tombouquet/github-tweaks/commit/9329aef801471b7676759b46ee1c0efba25b7759))
+* show Submit review and LGTM on the Commits and Files changed tabs ([#15](https://github.com/tombouquet/github-tweaks/issues/15)) ([2c7d83f](https://github.com/tombouquet/github-tweaks/commit/2c7d83f933b5373e5575f1982a843d5998c92b09))
+
 ## [1.11.2](https://github.com/tombouquet/github-tweaks/compare/v1.11.1...v1.11.2) (2026-10-29)
 
 
