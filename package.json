@@ -3,7 +3,7 @@
   "description": "Small fixes and extras for GitHub pull requests and repos.",
   "private": true,
   "license": "MIT",
-  "version": "1.11.2",
+  "version": "1.12.0",
   "type": "module",
   "scripts": {
     "dev": "wxt",
